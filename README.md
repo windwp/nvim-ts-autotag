@@ -1,7 +1,7 @@
 # nvim-ts-closetag
 Use treesitter to autoclose xml tag
 
-it work well with tsx
+it work with tsx,vue,svelte
 
 ## Usage
 
