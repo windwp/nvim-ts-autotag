@@ -20,7 +20,7 @@ Before        Input         After
 Neovim 0.5 with and nvim-treesitter to work
 
 ``` lua
-require('nvim-ts-closetag').setup()
+require('nvim-ts-autotag').setup()
 ```
 
 ## Default values
