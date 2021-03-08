@@ -3,8 +3,6 @@
 Use treesitter to **autoclose** and **autorename** xml tag
 
 It work with tsx,vue,svelte.
-Use treesitter then it only close and rename the tag match with your current cursor.
-
 
 ## Usage
 
