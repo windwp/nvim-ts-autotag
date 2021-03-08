@@ -1,7 +1,10 @@
-# nvim-ts-closetag
-Use treesitter to autoclose xml tag
+# nvim-ts-autotag
 
-it work with tsx,vue,svelte
+Use treesitter to autoclose and autorename xml tag
+
+It work with tsx,vue,svelte. it use treesitter then it only close and rename the tag match with your current cursor.
+
+
 
 ## Usage
 
@@ -11,6 +14,7 @@ Before        Input         After
 <div           >         <div></div> 
 ------------------------------------
 ```
+
 
 ## Setup
 Neovim 0.5 with and nvim-treesitter to work
