@@ -105,7 +105,6 @@ local function Test(test_data)
         helpers.feed(value.key,'x')
         helpers.feed("<esc>",'x')
         local result = vim.fn.getline(line)
-        print("AAAAAAAAAAAAAAAA")
         eq(after, result , "\n\n ERROR: " .. value.name .. "\n")
       else
         eq(false, true, "\n\n file not exist " .. value.filepath .. "\n")

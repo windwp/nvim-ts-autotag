@@ -18,13 +18,13 @@ end
 
 local data = {
   {
-    name     = "html auto close tag" ,
+    name     = "html close tag" ,
     filepath = './sample/index.html',
     filetype = "html",
     linenr   = 10,
     key      = [[>]],
-    before   = [[<div| ]],
-    after    = [[<div> </div>]]
+    before   = [[<div|]],
+    after    = [[<div></div>]]
   },
   {
     name     = "html not close on input tag" ,
@@ -45,16 +45,26 @@ local data = {
     after    = [[<div class="aa>|"> </div>  ]]
   },
   {
+    only=true,
+    name     = "html not close on exist tag" ,
+    filepath = './sample/index.html',
+    filetype = "html",
+    linenr   = 10,
+    key      = [[>]],
+    before   = [[<div| </div]],
+    after    = [[<div> </div>]]
+  },
+  {
     name     = "typescriptreact auto close tag" ,
     filepath = './sample/index.tsx',
     filetype = "typescriptreact",
     linenr   = 12,
     key      = [[>]],
-    before   = [[<Img| ]],
-    after    = [[<Img>| </Img>]]
+    before   = [[<Img|]],
+    after    = [[<Img>|</Img>]]
   },
   {
-    name     = "typescriptreact auto close tag" ,
+    name     = "typescriptreact don't close closing tag" ,
     filepath = './sample/index.tsx',
     filetype = "typescriptreact",
     linenr   = 12,
@@ -63,13 +73,13 @@ local data = {
     after    = [[<button className="btn " onClick={()}> </button>| ]]
   },
   {
-    name     = "typescriptreact not close on script" ,
+    name     = "typescriptreact not close on expresion" ,
     filepath = './sample/index.tsx',
     filetype = "typescriptreact",
     linenr   = 6,
     key      = [[>]],
-    before   = [[const data:Array<string| ]],
-    after    = [[const data:Array<string> ]]
+    before   = [[<button className="btn " onClick={(|)}> </button> ]],
+    after    = [[<button className="btn " onClick={(>|)}> </button> ]]
   },
   {
     name     = "typescriptreact not close on script" ,
@@ -80,25 +90,34 @@ local data = {
     before   = [[const data:Array<string| ]],
     after    = [[const data:Array<string> ]]
   },
-  -- {
-  --   only = true,
-  --   name     = "vue auto close tag" ,
-  --   filepath = './sample/index.vue',
-  --   filetype = "vue",
-  --   linenr   = 4,
-  --   key      = [[>]],
-  --   before   = [[<Img| ]],
-  --   after    = [[<Img>| </Img>]]
-  -- },
-  -- {
-  --   name     = "vue not close on script",
-  --   filepath = './sample/index.vue',
-  --   filetype = "vue",
-  --   linenr   = 12,
-  --   key      = [[>]],
-  --   before   = [[const data:Array<string| ]],
-  --   after    = [[const data:Array<string> ]]
-  -- },
+
+  {
+    name     = "typescriptreact not close on script" ,
+    filepath = './sample/index.tsx',
+    filetype = "typescriptreact",
+    linenr   = 6,
+    key      = [[>]],
+    before   = [[{(card.data | 0) && <div></div>}]],
+    after    = [[{(card.data >| 0) && <div></div>}]]
+  },
+  {
+    name     = "vue auto close tag" ,
+    filepath = './sample/index.vue',
+    filetype = "vue",
+    linenr   = 4,
+    key      = [[>]],
+    before   = [[<Img|]],
+    after    = [[<Img>|</Img>]]
+  },
+  {
+    name     = "vue not close on script",
+    filepath = './sample/index.vue',
+    filetype = "vue",
+    linenr   = 12,
+    key      = [[>]],
+    before   = [[const data:Array<string| ]],
+    after    = [[const data:Array<string> ]]
+  },
 }
 local run_data = {}
 for _, value in pairs(data) do
@@ -110,7 +129,10 @@ end
 if #run_data == 0 then run_data = data end
 local autotag = require('nvim-ts-autotag')
 autotag.test = true
+autotag.enableRename = false
 
+local _, ts_utils = pcall(require, 'nvim-treesitter.ts_utils')
+_G.TU=ts_utils
 local function Test(test_data)
   for _, value in pairs(test_data) do
     it("test "..value.name, function()
@@ -119,15 +141,14 @@ local function Test(test_data)
       local p_before = string.find(value.before , '%|')
       local p_after = string.find(value.after , '%|')
       local line =value.linenr
-      vim.bo.filetype = value.filetype
       if vim.fn.filereadable(vim.fn.expand(value.filepath)) == 1 then
         vim.cmd(":bd!")
         vim.cmd(":e " .. value.filepath)
+        vim.bo.filetype = value.filetype
         vim.fn.setline(line , before)
-        vim.fn.cursor(line, p_before)
+        vim.fn.cursor(line, p_before -1)
         -- autotag.closeTag()
         helpers.insert(value.key)
-        helpers.feed("<esc>")
         local result = vim.fn.getline(line)
         eq(after, result , "\n\n text error: " .. value.name .. "\n")
       else

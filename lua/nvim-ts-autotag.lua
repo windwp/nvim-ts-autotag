@@ -11,7 +11,9 @@ M.tbl_skipTag = {
   'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr','menuitem'
 }
 
-M.test = false
+M.test         = false
+M.enableRename = true
+M.enableClose  = true
 
 M.setup = function (opts)
   opts            = opts or {}
@@ -40,12 +42,14 @@ local function isJsX()
 end
 M.on_file_type = function ()
   if is_in_table(M.tbl_filetypes,vim.bo.filetype) then
-    vim.cmd[[inoremap <silent> <buffer> > ><c-o>:lua require('nvim-ts-autotag').closeTag()<CR>]]
+    vim.cmd[[inoremap <silent> <buffer> > <c-o>:lua require('nvim-ts-autotag').closeTag()<CR>]]
     local bufnr = vim.api.nvim_get_current_buf()
-    vim.cmd("augroup nvim_ts_xmltag_" .. bufnr)
-    vim.cmd[[autocmd!]]
-    vim.cmd[[autocmd InsertLeave <buffer> call v:lua.require('nvim-ts-autotag').renameTag() ]]
-    vim.cmd[[augroup end]]
+    if M.enableRename==true then
+      vim.cmd("augroup nvim_ts_xmltag_" .. bufnr)
+      vim.cmd[[autocmd!]]
+      vim.cmd[[autocmd InsertLeave <buffer> call v:lua.require('nvim-ts-autotag').renameTag() ]]
+      vim.cmd[[augroup end]]
+    end
   end
 end
 local function find_child_match(opts)
@@ -101,13 +105,6 @@ local function find_tag_node(start_tag_pattern, name_tag_pattern,skip_tag_patter
     pattern = start_tag_pattern,
     skip_tag_pattern = skip_tag_pattern
   })
-  if(M.test and start_tag_node == nil) then
-   start_tag_node = find_child_match({
-     target = cur_node,
-     pattern = start_tag_pattern,
-     skip_tag_pattern = skip_tag_pattern
-   })
-  end
   if start_tag_node== nil then return nil end
   local tbl_name_pattern = vim.split(name_tag_pattern, '>')
   local name_node = start_tag_node
@@ -150,9 +147,12 @@ M.closeTag = function ()
   end
   local tag_node = find_tag_node(start_tag_pattern, name_tag_pattern,skip_tag_pattern)
   local tag_name = get_tag_name(tag_node)
-  if tag_name ~= nil and not is_in_table(M.tbl_skipTag,tag_name) then
-    vim.cmd(string.format([[normal! a</%s>]],tag_name))
+  -- check if already have exist tag
+  if tag_name ~= nil and not is_in_table(M.tbl_skipTag, tag_name) then
+    vim.cmd(string.format([[normal! a></%s>]],tag_name))
     vim.cmd[[normal! T>]]
+  else
+    vim.cmd(string.format([[normal! a>]],tag_name))
   end
 end
 
