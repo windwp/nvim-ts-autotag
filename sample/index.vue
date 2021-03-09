@@ -1,11 +1,10 @@
 <template>
 <div class="aaa">
 
-</div>
+<Img 
 </template>
 
 <script>
-
 export default {
   name: 'Sample',
   data() {
@@ -20,6 +19,6 @@ export default {
 
 <style scoped>
 .sample{
-  width:`100px`;
+  width:100px;
 }
 </style>

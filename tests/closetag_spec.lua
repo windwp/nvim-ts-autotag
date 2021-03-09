@@ -3,9 +3,6 @@ local helpers = {}
 ts.setup {
   ensure_installed = 'maintained',
   highlight = {enable = true},
-  indent = {
-    enable = false
-  }
 }
 local eq = assert.are.same
 
@@ -56,24 +53,25 @@ local data = {
     before   = [[const data:Array<string| ]],
     after    = [[const data:Array<string> ]]
   },
-  {
-    name     = "vue auto close tag" ,
-    filepath = './sample/index.vue',
-    filetype = "vue",
-    linenr   = 4,
-    key      = [[>]],
-    before   = [[<Img| ]],
-    after    = [[<Img>| </Img>]]
-  },
-  {
-    name     = "vue not close on script",
-    filepath = './sample/index.vue',
-    filetype = "vue",
-    linenr   = 12,
-    key      = [[>]],
-    before   = [[const data:Array<string| ]],
-    after    = [[const data:Array<string> ]]
-  },
+  -- {
+  --   only = true,
+  --   name     = "vue auto close tag" ,
+  --   filepath = './sample/index.vue',
+  --   filetype = "vue",
+  --   linenr   = 4,
+  --   key      = [[>]],
+  --   before   = [[<Img| ]],
+  --   after    = [[<Img>| </Img>]]
+  -- },
+  -- {
+  --   name     = "vue not close on script",
+  --   filepath = './sample/index.vue',
+  --   filetype = "vue",
+  --   linenr   = 12,
+  --   key      = [[>]],
+  --   before   = [[const data:Array<string| ]],
+  --   after    = [[const data:Array<string> ]]
+  -- },
 }
 local run_data = {}
 for _, value in pairs(data) do
@@ -84,7 +82,7 @@ for _, value in pairs(data) do
 end
 if #run_data == 0 then run_data = data end
 local autotag = require('nvim-ts-autotag')
-autotag.test=true
+autotag.test = true
 
 local function Test(test_data)
   for _, value in pairs(test_data) do
@@ -96,14 +94,15 @@ local function Test(test_data)
       local line =value.linenr
       vim.bo.filetype = value.filetype
       if vim.fn.filereadable(vim.fn.expand(value.filepath)) == 1 then
+        vim.cmd(":bd!")
         vim.cmd(":e " .. value.filepath)
         vim.fn.setline(line , before)
         vim.fn.cursor(line, p_before)
+        -- autotag.closeTag()
         helpers.insert(value.key)
         helpers.feed("<esc>")
         local result = vim.fn.getline(line)
         eq(after, result , "\n\n text error: " .. value.name .. "\n")
-        vim.cmd(":bd!")
       else
         eq(false, true, "\n\n file not exist " .. value.filepath .. "\n")
       end
@@ -111,6 +110,6 @@ local function Test(test_data)
   end
 end
 
-describe('autotag ', function()
+describe('[close tag]', function()
   Test(run_data)
 end)

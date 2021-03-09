@@ -9,7 +9,7 @@ const SamplePage: React.FC = () => {
 
   return (
     <div className="h-full">
-
+<Img 
     </div>
   )
 }
