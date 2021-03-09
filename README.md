@@ -37,7 +37,7 @@ local skip_tags = {
 ### Override default values
 
 ``` lua
-require('nvim-ts-closetag').setup({
+require('nvim-ts-autotag').setup({
   filetypes = { "html" , "xml" },
 })
 ```
