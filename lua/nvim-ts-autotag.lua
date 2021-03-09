@@ -25,6 +25,7 @@ end
 
 
 local function is_in_table(tbl, val)
+  if tbl == nil then return false end
   for _, value in pairs(tbl) do
     if string.match(val, value) then return true end
   end
@@ -47,22 +48,34 @@ M.on_file_type = function ()
     vim.cmd[[augroup end]]
   end
 end
-local function find_child_match(target, pattern)
+local function find_child_match(opts)
+  local target           = opts.target
+  local pattern          = opts.pattern
+  local skip_tag_pattern = opts.skip_tag_pattern
+  assert(target ~= nil, "find child target not nil :" .. pattern)
   for node in target:iter_children() do
     local node_type = node:type()
-    if node_type ~= nil and node_type == pattern then
+    if node_type ~= nil and
+      node_type == pattern and
+      not is_in_table(skip_tag_pattern, node_type)
+    then
       return node
     end
   end
 end
 
-local function find_parent_match(target, pattern,max_depth)
-  max_depth = max_depth or 20
+local function find_parent_match(opts)
+  local target           = opts.target
+  local max_depth        = opts.max_depth or 10
+  local pattern          = opts.pattern
+  local skip_tag_pattern = opts.skip_tag_pattern
+  assert(target ~= nil, "find parent target not nil :" .. pattern)
   local cur_depth = 0
   local cur_node = target
   while cur_node ~= nil do
     local node_type = cur_node:type()
-    if node_type ~= nil and node_type== pattern then
+    if is_in_table(skip_tag_pattern,node_type) then return nil end
+    if node_type ~= nil and node_type == pattern then
       return cur_node
     elseif cur_depth < max_depth then
       cur_depth = cur_depth + 1
@@ -81,29 +94,46 @@ local function get_tag_name(node)
   return tag_name
 end
 
-local function find_tag_node(start_tag_pattern, name_tag_pattern)
+local function find_tag_node(start_tag_pattern, name_tag_pattern,skip_tag_pattern)
   local cur_node = ts_utils.get_node_at_cursor()
-  local start_tag_node = find_parent_match(cur_node, start_tag_pattern)
+  local start_tag_node = find_parent_match({
+    target = cur_node,
+    pattern = start_tag_pattern,
+    skip_tag_pattern = skip_tag_pattern
+  })
   if(M.test and start_tag_node == nil) then
-   start_tag_node = find_child_match(cur_node, start_tag_pattern)
+   start_tag_node = find_child_match({
+     target = cur_node,
+     pattern = start_tag_pattern,
+     skip_tag_pattern = skip_tag_pattern
+   })
   end
   if start_tag_node== nil then return nil end
   local tbl_name_pattern = vim.split(name_tag_pattern, '>')
   local name_node = start_tag_node
   for _, pattern in pairs(tbl_name_pattern) do
-    name_node = find_child_match(name_node, pattern)
+    name_node = find_child_match({
+      target = name_node,
+      pattern = pattern
+    })
   end
   return name_node
 end
 
 local function find_close_tag_node(close_tag_pattern, name_tag_pattern, cur_node)
   cur_node = cur_node or ts_utils.get_node_at_cursor()
-  local close_tag_node = find_child_match(cur_node, close_tag_pattern)
+  local close_tag_node = find_child_match({
+    target = cur_node,
+    pattern = close_tag_pattern
+  })
   if close_tag_node== nil then return nil end
   local tbl_name_pattern = vim.split(name_tag_pattern, '>')
   local name_node = close_tag_node
   for _, pattern in pairs(tbl_name_pattern) do
-    name_node = find_child_match(name_node, pattern)
+    name_node = find_child_match({
+      target = name_node,
+      pattern = pattern
+  })
   end
   return name_node
 end
@@ -111,12 +141,14 @@ end
 
 M.closeTag = function ()
   local start_tag_pattern = 'start_tag'
-  local name_tag_pattern = 'tag_name'
+  local name_tag_pattern  = 'tag_name'
+  local skip_tag_pattern  = {'quoted_attribute_value', 'end_tag'}
   if isJsX() then
     start_tag_pattern = 'jsx_element'
-    name_tag_pattern = 'jsx_opening_element>identifier'
+    name_tag_pattern  = 'jsx_opening_element>identifier'
+    skip_tag_pattern  = {'jsx_expression', 'jsx_closing_element' }
   end
-  local tag_node = find_tag_node(start_tag_pattern, name_tag_pattern)
+  local tag_node = find_tag_node(start_tag_pattern, name_tag_pattern,skip_tag_pattern)
   local tag_name = get_tag_name(tag_node)
   if tag_name ~= nil and not is_in_table(M.tbl_skipTag,tag_name) then
     vim.cmd(string.format([[normal! a</%s>]],tag_name))
@@ -141,16 +173,20 @@ local function checkStartTag()
   local close_name_tag_pattern = 'erroneous_end_tag_name'
   local element_tag            = 'element'
   if isJsX() then
-    start_tag_pattern = 'jsx_opening_element'
+    start_tag_pattern      = 'jsx_opening_element'
     start_name_tag_pattern = 'identifier'
-    close_tag_pattern = 'jsx_closing_element'
+    close_tag_pattern      = 'jsx_closing_element'
     close_name_tag_pattern = 'identifier'
     element_tag            = 'jsx_element'
   end
   local tag_node = find_tag_node(start_tag_pattern, start_name_tag_pattern)
   if tag_node == nil then return end
   local tag_name = get_tag_name(tag_node)
-  tag_node = find_parent_match(tag_node, element_tag, 2)
+  tag_node = find_parent_match({
+    target = tag_node,
+    pattern = element_tag,
+    max_depth = 2
+  })
   if tag_node == nil then return end
   local close_tag_node = find_close_tag_node(close_tag_pattern, close_name_tag_pattern, tag_node)
   if close_tag_node ~= nil then
@@ -159,7 +195,10 @@ local function checkStartTag()
       replaceTextNode(close_tag_node, tag_name)
     end
   else
-    close_tag_node = find_child_match(tag_node,'ERROR')
+    close_tag_node = find_child_match({
+      target = tag_node,
+      pattern = 'ERROR'
+    })
     if close_tag_node ~=nil then
       local close_tag_name = get_tag_name(close_tag_node)
       if close_tag_name=='</>' then
@@ -185,7 +224,11 @@ local function checkEndTag()
   local tag_node = find_tag_node(end_tag_pattern, end_name_tag_pattern)
   if tag_node == nil then return end
   local tag_name = get_tag_name(tag_node)
-  tag_node = find_parent_match(tag_node, element_tag, 2)
+  tag_node = find_parent_match({
+    target = tag_node,
+    pattern = element_tag,
+    max_depth = 2
+  })
   if tag_node == nil then return end
   local start_tag_node = find_close_tag_node(start_tag_pattern, start_name_tag_pattern, tag_node)
   if start_tag_node ~= nil then

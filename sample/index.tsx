@@ -9,7 +9,11 @@ const SamplePage: React.FC = () => {
 
   return (
     <div className="h-full">
-<Img 
+      <aaa className="btn btn-success px-3" type="button" onClick={()}> </aaa>
+
+      <div></div>
+
+
     </div>
   )
 }

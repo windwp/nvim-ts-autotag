@@ -36,6 +36,15 @@ local data = {
     after    = [[<input>| ]]
   },
   {
+    name     = "html not close inside quote" ,
+    filepath = './sample/index.html',
+    filetype = "html",
+    linenr   = 10,
+    key      = [[>]],
+    before   = [[<div class="aa|"> </div>  ]],
+    after    = [[<div class="aa>|"> </div>  ]]
+  },
+  {
     name     = "typescriptreact auto close tag" ,
     filepath = './sample/index.tsx',
     filetype = "typescriptreact",
@@ -43,6 +52,24 @@ local data = {
     key      = [[>]],
     before   = [[<Img| ]],
     after    = [[<Img>| </Img>]]
+  },
+  {
+    name     = "typescriptreact auto close tag" ,
+    filepath = './sample/index.tsx',
+    filetype = "typescriptreact",
+    linenr   = 12,
+    key      = [[>]],
+    before   = [[<button className="btn " onClick={()}> </button| ]],
+    after    = [[<button className="btn " onClick={()}> </button>| ]]
+  },
+  {
+    name     = "typescriptreact not close on script" ,
+    filepath = './sample/index.tsx',
+    filetype = "typescriptreact",
+    linenr   = 6,
+    key      = [[>]],
+    before   = [[const data:Array<string| ]],
+    after    = [[const data:Array<string> ]]
   },
   {
     name     = "typescriptreact not close on script" ,
