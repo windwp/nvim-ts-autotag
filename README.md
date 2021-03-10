@@ -2,7 +2,7 @@
 
 Use treesitter to **autoclose** and **autorename** xml tag
 
-It work with tsx,vue,svelte.
+It work with html,xml,tsx,vue,svelte.
 
 ## Usage
 
