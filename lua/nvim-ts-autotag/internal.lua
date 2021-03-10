@@ -54,7 +54,6 @@ local function is_in_table(tbl, val)
 end
 
 M.is_supported=function (lang)
-  print(vim.inspect(lang))
   return is_in_table(M.tbl_filetypes,lang)
 end
 
