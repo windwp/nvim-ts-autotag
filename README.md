@@ -17,8 +17,20 @@ Before        Input         After
 ## Setup
 Neovim 0.5 with and nvim-treesitter to work
 
+User treesitter setup
+```lua
+require'nvim-treesitter.configs'.setup {
+  autotag = {
+    enable = true,
+  }
+}
+
+```
+or you can use a set up function
+
 ``` lua
 require('nvim-ts-autotag').setup()
+
 ```
 
 ## Default values
@@ -37,10 +49,16 @@ local skip_tags = {
 ### Override default values
 
 ``` lua
+
+require'nvim-treesitter.configs'.setup {
+  autotag = {
+    enable = true,
+    filetypes = { "html" , "xml" },
+  }
+}
+-- OR
 require('nvim-ts-autotag').setup({
   filetypes = { "html" , "xml" },
 })
-```
 
-# Ref
-[vim-closetag](https://github.com/alvan/vim-closetag/edit/master/README.md)
+```

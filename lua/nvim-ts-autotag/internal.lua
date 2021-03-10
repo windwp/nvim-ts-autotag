@@ -1,9 +1,10 @@
 local _, ts_utils = pcall(require, 'nvim-treesitter.ts_utils')
+local configs = require'nvim-treesitter.configs'
 
 local M = {}
 
 M.tbl_filetypes = {
-  'html', 'xml', 'javascript', 'javascriptreact', 'typescriptreact', 'svelte', 'vue', 'php'
+  'html', 'xml', 'javascript', 'javascriptreact', 'typescriptreact', 'svelte', 'vue'
 }
 
 M.tbl_skipTag = {
@@ -22,6 +23,7 @@ local HTML_TAG = {
   element_tag            = 'element',
   skip_tag_pattern       = {'quoted_attribute_value', 'end_tag'},
 }
+
 local JSX_TAG = {
   start_tag_pattern       = 'jsx_opening_element',
   start_name_tag_pattern  = 'identifier',
@@ -34,7 +36,6 @@ local JSX_TAG = {
 }
 
 
-M.test = false
 M.enableRename = true
 M.enableClose  = true
 
@@ -42,10 +43,6 @@ M.setup = function (opts)
   opts            = opts or {}
   M.tbl_filetypes = opts.filetypes or M.tbl_filetypes
   M.tbl_skipTag   = opts.skip_tag or M.tbl_skipTag
-  vim.cmd[[augroup nvim_ts_xmltag]]
-  vim.cmd[[autocmd!]]
-  vim.cmd[[autocmd FileType * call v:lua.require('nvim-ts-autotag').on_file_type()]]
-  vim.cmd[[augroup end]]
 end
 
 local function is_in_table(tbl, val)
@@ -56,7 +53,12 @@ local function is_in_table(tbl, val)
   return false
 end
 
-local function isJsX()
+M.is_supported=function (lang)
+  print(vim.inspect(lang))
+  return is_in_table(M.tbl_filetypes,lang)
+end
+
+local function is_jsx()
   if is_in_table({'typescriptreact', 'javascriptreact'}, vim.bo.filetype) then
     return true
   end
@@ -65,21 +67,11 @@ end
 
 local function  get_ts_tag()
   local ts_tag = HTML_TAG
-  if(isJsX()) then ts_tag = JSX_TAG end
+  if(is_jsx()) then ts_tag = JSX_TAG end
   return ts_tag
 end
 
 M.on_file_type = function ()
-  if is_in_table(M.tbl_filetypes,vim.bo.filetype) then
-    vim.cmd[[inoremap <silent> <buffer> > ><c-o>:lua require('nvim-ts-autotag').closeTag()<CR>]]
-    local bufnr = vim.api.nvim_get_current_buf()
-    if M.enableRename == true then
-      vim.cmd("augroup nvim_ts_xmltag_" .. bufnr)
-      vim.cmd[[autocmd!]]
-      vim.cmd[[autocmd InsertLeave <buffer> call v:lua.require('nvim-ts-autotag').renameTag() ]]
-      vim.cmd[[augroup end]]
-    end
-  end
 end
 local function find_child_match(opts)
   local target           = opts.target
@@ -201,7 +193,7 @@ end
 
 local function checkStartTag()
   local ts_tag = HTML_TAG
-  if(isJsX()) then ts_tag = JSX_TAG end
+  if(is_jsx()) then ts_tag = JSX_TAG end
   local tag_node = find_tag_node({
     tag_pattern = ts_tag.start_tag_pattern,
     name_tag_pattern = ts_tag.start_name_tag_pattern,
@@ -272,4 +264,24 @@ M.renameTag = function ()
   checkEndTag()
 end
 
+M.attach = function (bufnr, lang)
+ local config = configs.get_module('autotag')
+ M.setup(config)
+ if is_in_table(M.tbl_filetypes,vim.bo.filetype) then
+   vim.cmd[[inoremap <silent> <buffer> > ><c-o>:lua require('nvim-ts-autotag.internal').closeTag()<CR>]]
+   bufnr = bufnr or vim.api.nvim_get_current_buf()
+   if M.enableRename == true then
+     vim.cmd("augroup nvim_ts_xmltag_" .. bufnr)
+     vim.cmd[[autocmd!]]
+     vim.cmd[[autocmd InsertLeave <buffer> call v:lua.require('nvim-ts-autotag.internal').renameTag() ]]
+     vim.cmd[[augroup end]]
+   end
+ end
+end
+
+M.detach = function (bufnr )
+
+end
+
+-- _G.AUTO = M
 return M
