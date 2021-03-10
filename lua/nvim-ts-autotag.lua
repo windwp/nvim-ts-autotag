@@ -21,9 +21,6 @@ local HTML_TAG = {
   close_name_tag_pattern = 'erroneous_end_tag_name',
   element_tag            = 'element',
   skip_tag_pattern       = {'quoted_attribute_value', 'end_tag'},
-
-  close_tag      = 'start_tag',
-  close_name_tag = 'tag_name',
 }
 local JSX_TAG = {
   start_tag_pattern       = 'jsx_opening_element',
@@ -34,10 +31,8 @@ local JSX_TAG = {
   close_name_tag_pattern  = 'identifier',
   element_tag             = 'jsx_element',
   skip_tag_pattern        = {'jsx_closing_element','jsx_expression', 'string', 'jsx_attribute'},
-
-  close_name_tag = 'jsx_opening_element>identifier',
-  close_tag      = 'jsx_element',
 }
+
 
 M.test = false
 M.enableRename = true
@@ -52,7 +47,6 @@ M.setup = function (opts)
   vim.cmd[[autocmd FileType * call v:lua.require('nvim-ts-autotag').on_file_type()]]
   vim.cmd[[augroup end]]
 end
-
 
 local function is_in_table(tbl, val)
   if tbl == nil then return false end
@@ -174,8 +168,8 @@ end
 local function  checkCloseTag()
   local ts_tag = get_ts_tag()
   local tag_node     = find_tag_node({
-    tag_pattern      = ts_tag.close_tag,
-    name_tag_pattern = ts_tag.close_name_tag,
+    tag_pattern      = ts_tag.start_tag_pattern,
+    name_tag_pattern = ts_tag.start_name_tag_pattern,
     skip_tag_pattern = ts_tag.skip_tag_pattern
   })
   if tag_node ~=nil then
@@ -184,25 +178,6 @@ local function  checkCloseTag()
       return false
     end
     return true,tag_name
-    -- tag_node = find_parent_match({
-    --   target = tag_node,
-    --   pattern = ts_tag.element_tag,
-    --   max_depth = 2
-    -- })
-    -- local close_tag_node = find_close_tag_node({
-    --   target             = tag_node,
-    --   tag_pattern        = ts_tag.end_tag_pattern,
-    --   name_tag_pattern   = ts_tag.end_name_tag_pattern,
-    -- })
-    -- -- check if already have exist tag
-    -- if close_tag_node ~= nil then
-    --   local close_tag_name = get_tag_name(close_tag_node)
-    --   if tag_name ~= close_tag_name then
-    --     return true ,tag_name
-    --   end
-    -- else
-    --   return true,tag_name
-    -- end
   end
   return false
 end

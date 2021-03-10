@@ -42,7 +42,7 @@ local data = {
     linenr   = 10,
     key      = [[>]],
     before   = [[<div>aa</div|]],
-    after    = [[<div>aa</div>]]
+    after    = [[<div>aa</div>|]]
   },
   {
     name     = "html not close on input tag" ,
@@ -88,6 +88,25 @@ local data = {
     key      = [[>]],
     before   = [[<div|]],
     after    = [[<div>|</div>]]
+  },
+  {
+    name     = "typescriptreact not close on exist tag" ,
+    filepath = './sample/index.tsx',
+    filetype = "typescriptreact",
+    linenr   = 12,
+    key      = [[>]],
+    before   = [[const a = () => <div|]],
+    after    = [[const a = () => <div>|</div>]]
+  },
+
+  {
+    name     = "typescriptreact close tag" ,
+    filepath = './sample/index.tsx',
+    filetype = "typescriptreact",
+    linenr   = 12,
+    key      = [[>]],
+    before   = [[<Img|]],
+    after    = [[<Img>|</Img>]]
   },
   {
     name     = "typescriptreact not close on close tag" ,
@@ -176,9 +195,9 @@ local function Test(test_data)
         -- autotag.closeTag()
         helpers.insert(value.key)
         local result = vim.fn.getline(line)
-        -- local pos = vim.fn.getpos('.')
+        local pos = vim.fn.getpos('.')
         eq(after, result , "\n\n [ERROR TEXT]: " .. value.name .. "\n")
-        -- eq(p_after, pos[3] + 1, "\n\n [ERROR POS]: " .. value.name .. "\n")
+        eq(p_after, pos[3] + 1, "\n\n [ERROR POS]: " .. value.name .. "\n")
       else
         eq(false, true, "\n\n file not exist " .. value.filepath .. "\n")
       end
