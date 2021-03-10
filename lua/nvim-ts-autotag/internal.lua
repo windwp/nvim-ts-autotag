@@ -266,9 +266,10 @@ local function checkEndTag()
     end
   end
 end
+
 M.renameTag = function ()
   checkStartTag()
   checkEndTag()
 end
-M.setup()
+
 return M
