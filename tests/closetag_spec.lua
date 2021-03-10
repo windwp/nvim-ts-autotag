@@ -13,7 +13,7 @@ function helpers.feed(text, feed_opts)
 end
 
 function helpers.insert(text)
-  helpers.feed('i' .. text, 'x')
+  helpers.feed('a' .. text, 'x')
 end
 
 local data = {
@@ -24,7 +24,25 @@ local data = {
     linenr   = 10,
     key      = [[>]],
     before   = [[<div|]],
-    after    = [[<div></div>]]
+    after    = [[<div>|</div>]]
+  },
+  {
+    name     = "html close tag" ,
+    filepath = './sample/index.html',
+    filetype = "html",
+    linenr   = 10,
+    key      = [[>]],
+    before   = [[<div clas="laa"|]],
+    after    = [[<div clas="laa">|</div>]]
+  },
+  {
+    name     = "html not close tag on close tag" ,
+    filepath = './sample/index.html',
+    filetype = "html",
+    linenr   = 10,
+    key      = [[>]],
+    before   = [[<div>aa</div|]],
+    after    = [[<div>aa</div>]]
   },
   {
     name     = "html not close on input tag" ,
@@ -45,17 +63,16 @@ local data = {
     after    = [[<div class="aa>|"> </div>  ]]
   },
   {
-    only=true,
     name     = "html not close on exist tag" ,
     filepath = './sample/index.html',
     filetype = "html",
     linenr   = 10,
     key      = [[>]],
-    before   = [[<div| </div]],
-    after    = [[<div> </div>]]
+    before   = [[<div|</div>]],
+    after    = [[<div>|</div>]]
   },
   {
-    name     = "typescriptreact auto close tag" ,
+    name     = "typescriptreact close tag" ,
     filepath = './sample/index.tsx',
     filetype = "typescriptreact",
     linenr   = 12,
@@ -64,19 +81,28 @@ local data = {
     after    = [[<Img>|</Img>]]
   },
   {
-    name     = "typescriptreact don't close closing tag" ,
+    name     = "typescriptreact not close on exist tag" ,
     filepath = './sample/index.tsx',
     filetype = "typescriptreact",
     linenr   = 12,
     key      = [[>]],
-    before   = [[<button className="btn " onClick={()}> </button| ]],
-    after    = [[<button className="btn " onClick={()}> </button>| ]]
+    before   = [[<div|]],
+    after    = [[<div>|</div>]]
+  },
+  {
+    name     = "typescriptreact not close on close tag" ,
+    filepath = './sample/index.tsx',
+    filetype = "typescriptreact",
+    linenr   = 12,
+    key      = [[>]],
+    before   = [[<button className="btn " onClick={()}> </button|]],
+    after    = [[<button className="btn " onClick={()}> </button>|]]
   },
   {
     name     = "typescriptreact not close on expresion" ,
     filepath = './sample/index.tsx',
     filetype = "typescriptreact",
-    linenr   = 6,
+    linenr   = 12,
     key      = [[>]],
     before   = [[<button className="btn " onClick={(|)}> </button> ]],
     after    = [[<button className="btn " onClick={(>|)}> </button> ]]
@@ -88,7 +114,7 @@ local data = {
     linenr   = 6,
     key      = [[>]],
     before   = [[const data:Array<string| ]],
-    after    = [[const data:Array<string> ]]
+    after    = [[const data:Array<string>| ]]
   },
 
   {
@@ -116,7 +142,7 @@ local data = {
     linenr   = 12,
     key      = [[>]],
     before   = [[const data:Array<string| ]],
-    after    = [[const data:Array<string> ]]
+    after    = [[const data:Array<string>| ]]
   },
 }
 local run_data = {}
@@ -146,11 +172,13 @@ local function Test(test_data)
         vim.cmd(":e " .. value.filepath)
         vim.bo.filetype = value.filetype
         vim.fn.setline(line , before)
-        vim.fn.cursor(line, p_before -1)
+        vim.fn.cursor(line, p_before-1)
         -- autotag.closeTag()
         helpers.insert(value.key)
         local result = vim.fn.getline(line)
-        eq(after, result , "\n\n text error: " .. value.name .. "\n")
+        -- local pos = vim.fn.getpos('.')
+        eq(after, result , "\n\n [ERROR TEXT]: " .. value.name .. "\n")
+        -- eq(p_after, pos[3] + 1, "\n\n [ERROR POS]: " .. value.name .. "\n")
       else
         eq(false, true, "\n\n file not exist " .. value.filepath .. "\n")
       end

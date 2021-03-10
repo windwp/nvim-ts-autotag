@@ -21,7 +21,7 @@ end
 
 local data = {
   {
-    name     = "html rename tag" ,
+    name     = "html rename open tag" ,
     filepath = './sample/index.html',
     filetype = "html",
     linenr   = 10,
@@ -30,7 +30,7 @@ local data = {
     after    = [[<lala|> dsadsa </lala> ]]
   },
   {
-    name     = "html rename tag with attr" ,
+    name     = "html rename open tag with attr" ,
     filepath = './sample/index.html',
     filetype = "html",
     linenr   = 10,
@@ -39,7 +39,7 @@ local data = {
     after    = [[<lala| class="lla"> dsadsa </lala|> ]]
   },
   {
-    name     = "html rename on close tag with attr" ,
+    name     = "html rename close tag with attr" ,
     filepath = './sample/index.html',
     filetype = "html",
     linenr   = 10,
@@ -48,7 +48,7 @@ local data = {
     after    = [[<lala class="lla"> dsadsa </lala|> ]]
   },
   {
-    name     = "typescriptreact rename tag" ,
+    name     = "typescriptreact rename open tag" ,
     filepath = './sample/index.tsx',
     filetype = "typescriptreact",
     linenr   = 12,
@@ -57,7 +57,7 @@ local data = {
     after    = [[<lala|> dsadsa </lala> ]]
   },
   {
-    name     = "typescriptreact rename tag" ,
+    name     = "typescriptreact rename open tag with attr" ,
     filepath = './sample/index.tsx',
     filetype = "typescriptreact",
     linenr   = 12,
@@ -66,7 +66,7 @@ local data = {
     after    = [[<lala| class="lla"> dsadsa </lala> ]]
   },
   {
-    name     = "typescriptreact rename on close tag with attr" ,
+    name     = "typescriptreact rename close tag with attr" ,
     filepath = './sample/index.tsx',
     filetype = "html",
     linenr   = 12,

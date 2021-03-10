@@ -11,7 +11,35 @@ M.tbl_skipTag = {
   'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr','menuitem'
 }
 
-M.test         = false
+
+local HTML_TAG = {
+  start_tag_pattern      = 'start_tag',
+  start_name_tag_pattern = 'tag_name',
+  end_tag_pattern        = "end_tag",
+  end_name_tag_pattern   = "tag_name",
+  close_tag_pattern      = 'erroneous_end_tag',
+  close_name_tag_pattern = 'erroneous_end_tag_name',
+  element_tag            = 'element',
+  skip_tag_pattern       = {'quoted_attribute_value', 'end_tag'},
+
+  close_tag      = 'start_tag',
+  close_name_tag = 'tag_name',
+}
+local JSX_TAG = {
+  start_tag_pattern       = 'jsx_opening_element',
+  start_name_tag_pattern  = 'identifier',
+  end_tag_pattern         = "jsx_closing_element",
+  end_name_tag_pattern    = "identifier",
+  close_tag_pattern       = 'jsx_closing_element',
+  close_name_tag_pattern  = 'identifier',
+  element_tag             = 'jsx_element',
+  skip_tag_pattern        = {'jsx_closing_element','jsx_expression', 'string', 'jsx_attribute'},
+
+  close_name_tag = 'jsx_opening_element>identifier',
+  close_tag      = 'jsx_element',
+}
+
+M.test = false
 M.enableRename = true
 M.enableClose  = true
 
@@ -29,7 +57,7 @@ end
 local function is_in_table(tbl, val)
   if tbl == nil then return false end
   for _, value in pairs(tbl) do
-    if string.match(val, value) then return true end
+    if val== value then return true end
   end
   return false
 end
@@ -40,11 +68,18 @@ local function isJsX()
   end
   return false
 end
+
+local function  get_ts_tag()
+  local ts_tag = HTML_TAG
+  if(isJsX()) then ts_tag = JSX_TAG end
+  return ts_tag
+end
+
 M.on_file_type = function ()
   if is_in_table(M.tbl_filetypes,vim.bo.filetype) then
-    vim.cmd[[inoremap <silent> <buffer> > <c-o>:lua require('nvim-ts-autotag').closeTag()<CR>]]
+    vim.cmd[[inoremap <silent> <buffer> > ><c-o>:lua require('nvim-ts-autotag').closeTag()<CR>]]
     local bufnr = vim.api.nvim_get_current_buf()
-    if M.enableRename==true then
+    if M.enableRename == true then
       vim.cmd("augroup nvim_ts_xmltag_" .. bufnr)
       vim.cmd[[autocmd!]]
       vim.cmd[[autocmd InsertLeave <buffer> call v:lua.require('nvim-ts-autotag').renameTag() ]]
@@ -98,16 +133,29 @@ local function get_tag_name(node)
   return tag_name
 end
 
-local function find_tag_node(start_tag_pattern, name_tag_pattern,skip_tag_pattern)
-  local cur_node = ts_utils.get_node_at_cursor()
-  local start_tag_node = find_parent_match({
-    target = cur_node,
-    pattern = start_tag_pattern,
-    skip_tag_pattern = skip_tag_pattern
-  })
-  if start_tag_node== nil then return nil end
+local function find_tag_node(opt)
+  local target           = opt.target or ts_utils.get_node_at_cursor()
+  local tag_pattern      = opt.tag_pattern
+  local name_tag_pattern = opt.name_tag_pattern
+  local skip_tag_pattern = opt.skip_tag_pattern
+  local find_child        = opt.find_child or false
+  local node
+  if find_child then
+     node              = find_child_match({
+      target           = target,
+      pattern          = tag_pattern,
+      skip_tag_pattern = skip_tag_pattern
+    })
+  else
+     node              = find_parent_match({
+      target           = target,
+      pattern          = tag_pattern,
+      skip_tag_pattern = skip_tag_pattern
+    })
+  end
+  if node == nil then return nil end
   local tbl_name_pattern = vim.split(name_tag_pattern, '>')
-  local name_node = start_tag_node
+  local name_node = node
   for _, pattern in pairs(tbl_name_pattern) do
     name_node = find_child_match({
       target = name_node,
@@ -117,43 +165,53 @@ local function find_tag_node(start_tag_pattern, name_tag_pattern,skip_tag_patter
   return name_node
 end
 
-local function find_close_tag_node(close_tag_pattern, name_tag_pattern, cur_node)
-  cur_node = cur_node or ts_utils.get_node_at_cursor()
-  local close_tag_node = find_child_match({
-    target = cur_node,
-    pattern = close_tag_pattern
-  })
-  if close_tag_node== nil then return nil end
-  local tbl_name_pattern = vim.split(name_tag_pattern, '>')
-  local name_node = close_tag_node
-  for _, pattern in pairs(tbl_name_pattern) do
-    name_node = find_child_match({
-      target = name_node,
-      pattern = pattern
-  })
-  end
-  return name_node
+local function find_close_tag_node(opt)
+  opt.find_child=true
+  return find_tag_node(opt)
 end
 
 
+local function  checkCloseTag()
+  local ts_tag = get_ts_tag()
+  local tag_node     = find_tag_node({
+    tag_pattern      = ts_tag.close_tag,
+    name_tag_pattern = ts_tag.close_name_tag,
+    skip_tag_pattern = ts_tag.skip_tag_pattern
+  })
+  if tag_node ~=nil then
+    local tag_name = get_tag_name(tag_node)
+    if tag_name ~= nil and  is_in_table(M.tbl_skipTag, tag_name) then
+      return false
+    end
+    return true,tag_name
+    -- tag_node = find_parent_match({
+    --   target = tag_node,
+    --   pattern = ts_tag.element_tag,
+    --   max_depth = 2
+    -- })
+    -- local close_tag_node = find_close_tag_node({
+    --   target             = tag_node,
+    --   tag_pattern        = ts_tag.end_tag_pattern,
+    --   name_tag_pattern   = ts_tag.end_name_tag_pattern,
+    -- })
+    -- -- check if already have exist tag
+    -- if close_tag_node ~= nil then
+    --   local close_tag_name = get_tag_name(close_tag_node)
+    --   if tag_name ~= close_tag_name then
+    --     return true ,tag_name
+    --   end
+    -- else
+    --   return true,tag_name
+    -- end
+  end
+  return false
+end
 M.closeTag = function ()
-  local start_tag_pattern = 'start_tag'
-  local name_tag_pattern  = 'tag_name'
-  local skip_tag_pattern  = {'quoted_attribute_value', 'end_tag'}
-  if isJsX() then
-    start_tag_pattern = 'jsx_element'
-    name_tag_pattern  = 'jsx_opening_element>identifier'
-    skip_tag_pattern  = {'jsx_expression', 'jsx_closing_element' }
-  end
-  local tag_node = find_tag_node(start_tag_pattern, name_tag_pattern,skip_tag_pattern)
-  local tag_name = get_tag_name(tag_node)
-  -- check if already have exist tag
-  if tag_name ~= nil and not is_in_table(M.tbl_skipTag, tag_name) then
-    vim.cmd(string.format([[normal! a></%s>]],tag_name))
-    vim.cmd[[normal! T>]]
-  else
-    vim.cmd(string.format([[normal! a>]],tag_name))
-  end
+   local result, tag_name = checkCloseTag()
+   if result == true and tag_name ~= nil then
+     vim.cmd(string.format([[normal! a</%s>]],tag_name))
+     vim.cmd[[normal! T>]]
+   end
 end
 
 local function replaceTextNode(node, tag_name)
@@ -167,28 +225,26 @@ local function replaceTextNode(node, tag_name)
 end
 
 local function checkStartTag()
-  local start_tag_pattern      = 'start_tag'
-  local start_name_tag_pattern = 'tag_name'
-  local close_tag_pattern      = 'erroneous_end_tag'
-  local close_name_tag_pattern = 'erroneous_end_tag_name'
-  local element_tag            = 'element'
-  if isJsX() then
-    start_tag_pattern      = 'jsx_opening_element'
-    start_name_tag_pattern = 'identifier'
-    close_tag_pattern      = 'jsx_closing_element'
-    close_name_tag_pattern = 'identifier'
-    element_tag            = 'jsx_element'
-  end
-  local tag_node = find_tag_node(start_tag_pattern, start_name_tag_pattern)
+  local ts_tag = HTML_TAG
+  if(isJsX()) then ts_tag = JSX_TAG end
+  local tag_node = find_tag_node({
+    tag_pattern = ts_tag.start_tag_pattern,
+    name_tag_pattern = ts_tag.start_name_tag_pattern,
+  })
+
   if tag_node == nil then return end
   local tag_name = get_tag_name(tag_node)
   tag_node = find_parent_match({
     target = tag_node,
-    pattern = element_tag,
+    pattern = ts_tag.element_tag,
     max_depth = 2
   })
   if tag_node == nil then return end
-  local close_tag_node = find_close_tag_node(close_tag_pattern, close_name_tag_pattern, tag_node)
+  local close_tag_node = find_close_tag_node({
+    target             = tag_node,
+    tag_pattern        = ts_tag.close_tag_pattern,
+    name_tag_pattern   = ts_tag.close_name_tag_pattern,
+  })
   if close_tag_node ~= nil then
     local close_tag_name = get_tag_name(close_tag_node)
     if tag_name ~=close_tag_name then
@@ -209,31 +265,28 @@ local function checkStartTag()
 end
 
 local function checkEndTag()
-  local end_tag_pattern = 'erroneous_end_tag'
-  local end_name_tag_pattern = 'erroneous_end_tag_name'
-  local start_tag_pattern = 'start_tag'
-  local start_name_tag_pattern = 'tag_name'
-  local element_tag            = 'element'
-  if isJsX() then
-     end_tag_pattern = 'jsx_closing_element'
-     end_name_tag_pattern = 'identifier'
-     start_tag_pattern = 'jsx_opening_element'
-     start_name_tag_pattern = 'identifier'
-    element_tag            = 'jsx_element'
-  end
-  local tag_node = find_tag_node(end_tag_pattern, end_name_tag_pattern)
+  local ts_tag = get_ts_tag()
+  local tag_node = find_tag_node({
+    tag_pattern = ts_tag.close_tag_pattern,
+    name_tag_pattern = ts_tag.close_name_tag_pattern,
+  })
+
   if tag_node == nil then return end
   local tag_name = get_tag_name(tag_node)
-  tag_node = find_parent_match({
-    target = tag_node,
-    pattern = element_tag,
+  tag_node    = find_parent_match({
+    target    = tag_node,
+    pattern   = ts_tag.element_tag,
     max_depth = 2
   })
   if tag_node == nil then return end
-  local start_tag_node = find_close_tag_node(start_tag_pattern, start_name_tag_pattern, tag_node)
+  local start_tag_node = find_close_tag_node({
+    target             = tag_node,
+    tag_pattern        = ts_tag.start_tag_pattern,
+    name_tag_pattern   = ts_tag.start_name_tag_pattern,
+  })
   if start_tag_node ~= nil then
     local start_tag_name = get_tag_name(start_tag_node)
-    if tag_name ~=start_tag_name then
+    if tag_name ~= start_tag_name then
       replaceTextNode(start_tag_node, tag_name)
     end
   end
@@ -242,4 +295,5 @@ M.renameTag = function ()
   checkStartTag()
   checkEndTag()
 end
+M.setup()
 return M

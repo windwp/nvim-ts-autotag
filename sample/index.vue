@@ -1,7 +1,8 @@
 <template>
-<div class="aaa">
 
-<Img 
+<div> </div>
+
+
 </template>
 
 <script>
