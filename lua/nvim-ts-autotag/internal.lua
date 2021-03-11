@@ -1,3 +1,5 @@
+
+
 local _, ts_utils = pcall(require, 'nvim-treesitter.ts_utils')
 local configs = require'nvim-treesitter.configs'
 
@@ -53,20 +55,17 @@ local function is_in_table(tbl, val)
   return false
 end
 
-M.is_supported=function (lang)
+M.is_supported = function (lang)
   return is_in_table(M.tbl_filetypes,lang)
 end
 
 local function is_jsx()
-  if is_in_table({'typescriptreact', 'javascriptreact', 'javascript', 'typescript'}, vim.bo.filetype) then
-    return true
-  end
-  return false
+  return  is_in_table({'typescriptreact', 'javascriptreact', 'javascript', 'typescript'}, vim.bo.filetype)
 end
 
-local function  get_ts_tag()
+local function get_ts_tag()
   local ts_tag = HTML_TAG
-  if(is_jsx()) then ts_tag = JSX_TAG end
+  if is_jsx() then ts_tag = JSX_TAG end
   return ts_tag
 end
 
@@ -123,7 +122,7 @@ local function find_tag_node(opt)
   local tag_pattern      = opt.tag_pattern
   local name_tag_pattern = opt.name_tag_pattern
   local skip_tag_pattern = opt.skip_tag_pattern
-  local find_child        = opt.find_child or false
+  local find_child       = opt.find_child or false
   local node
   if find_child then
      node              = find_child_match({
@@ -143,7 +142,7 @@ local function find_tag_node(opt)
   local name_node = node
   for _, pattern in pairs(tbl_name_pattern) do
     name_node = find_child_match({
-      target = name_node,
+      target  = name_node,
       pattern = pattern
     })
   end
@@ -165,18 +164,42 @@ local function checkCloseTag()
   })
   if tag_node ~=nil then
     local tag_name = get_tag_name(tag_node)
-    if tag_name ~= nil and  is_in_table(M.tbl_skipTag, tag_name) then
+    if tag_name ~= nil and is_in_table(M.tbl_skipTag, tag_name) then
       return false
+    end
+    -- case 6,9 check close on exist node
+    local element_node    = find_parent_match({
+      target    = tag_node,
+      pattern   = ts_tag.element_tag,
+      max_depth = 2
+    })
+    if tag_node ~= nil then
+      local close_tag_node = find_close_tag_node({
+        target             = element_node,
+        tag_pattern        = ts_tag.end_tag_pattern,
+        name_tag_pattern   = ts_tag.end_name_tag_pattern,
+      })
+      if close_tag_node ~= nil then
+        local start_row = tag_node:range()
+        local close_start_row = close_tag_node:range()
+        if start_row == close_start_row and tag_name == get_tag_name(close_tag_node) then
+          return false
+        end
+      end
     end
     return true,tag_name
   end
   return false
 end
+
+function M.code(cmd)
+  return vim.api.nvim_replace_termcodes(cmd, true, false, true)
+end
 M.closeTag = function ()
    local result, tag_name = checkCloseTag()
    if result == true and tag_name ~= nil then
      vim.cmd(string.format([[normal! a</%s>]],tag_name))
-     vim.cmd[[normal! T>]]
+     vim.cmd[[normal! F>]]
    end
 end
 
@@ -191,20 +214,21 @@ local function replaceTextNode(node, tag_name)
 end
 
 local function checkStartTag()
-  local ts_tag = HTML_TAG
-  if(is_jsx()) then ts_tag = JSX_TAG end
-  local tag_node = find_tag_node({
-    tag_pattern = ts_tag.start_tag_pattern,
+  local ts_tag = get_ts_tag()
+  local tag_node     = find_tag_node({
+    tag_pattern      = ts_tag.start_tag_pattern,
     name_tag_pattern = ts_tag.start_name_tag_pattern,
   })
 
   if tag_node == nil then return end
+
   local tag_name = get_tag_name(tag_node)
-  tag_node = find_parent_match({
-    target = tag_node,
-    pattern = ts_tag.element_tag,
+  tag_node    = find_parent_match({
+    target    = tag_node,
+    pattern   = ts_tag.element_tag,
     max_depth = 2
   })
+
   if tag_node == nil then return end
   local close_tag_node = find_close_tag_node({
     target             = tag_node,
@@ -263,11 +287,11 @@ M.renameTag = function ()
   checkEndTag()
 end
 
-M.attach = function (bufnr, lang)
+M.attach = function (bufnr)
  local config = configs.get_module('autotag')
  M.setup(config)
  if is_in_table(M.tbl_filetypes,vim.bo.filetype) then
-   vim.cmd[[inoremap <silent> <buffer> > ><c-c>:lua require('nvim-ts-autotag.internal').closeTag()<CR>i]]
+   vim.cmd[[inoremap <silent> <buffer> > ><c-c>:lua require('nvim-ts-autotag.internal').closeTag()<CR>a]]
    bufnr = bufnr or vim.api.nvim_get_current_buf()
    if M.enableRename == true then
      vim.cmd("augroup nvim_ts_xmltag_" .. bufnr)
@@ -278,7 +302,7 @@ M.attach = function (bufnr, lang)
  end
 end
 
-M.detach = function (bufnr )
+M.detach = function ( )
 
 end
 

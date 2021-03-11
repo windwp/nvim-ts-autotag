@@ -18,7 +18,7 @@ end
 
 local data = {
   {
-    name     = "html close tag" ,
+    name     = "1 html close tag" ,
     filepath = './sample/index.html',
     filetype = "html",
     linenr   = 10,
@@ -27,7 +27,7 @@ local data = {
     after    = [[<div>|</div>]]
   },
   {
-    name     = "html close tag" ,
+    name     = "2 html close tag" ,
     filepath = './sample/index.html',
     filetype = "html",
     linenr   = 10,
@@ -36,7 +36,7 @@ local data = {
     after    = [[<div clas="laa">|</div>]]
   },
   {
-    name     = "html not close tag on close tag" ,
+    name     = "3 html not close tag on close tag" ,
     filepath = './sample/index.html',
     filetype = "html",
     linenr   = 10,
@@ -45,7 +45,7 @@ local data = {
     after    = [[<div>aa</div>|]]
   },
   {
-    name     = "html not close on input tag" ,
+    name     = "4 html not close on input tag" ,
     filepath = './sample/index.html',
     filetype = "html",
     linenr   = 10,
@@ -54,7 +54,7 @@ local data = {
     after    = [[<input>| ]]
   },
   {
-    name     = "html not close inside quote" ,
+    name     = "5 html not close inside quote" ,
     filepath = './sample/index.html',
     filetype = "html",
     linenr   = 10,
@@ -63,16 +63,16 @@ local data = {
     after    = [[<div class="aa>|"> </div>  ]]
   },
   {
-    name     = "html not close on exist tag" ,
+    name     = "6 html not close on exist tag" ,
     filepath = './sample/index.html',
     filetype = "html",
     linenr   = 10,
     key      = [[>]],
-    before   = [[<div|</div>]],
-    after    = [[<div>|</div>]]
+    before   = [[<div><div|</div></div>]],
+    after    = [[<div><div>|</div></div>]]
   },
   {
-    name     = "typescriptreact close tag" ,
+    name     = "7 typescriptreact close tag" ,
     filepath = './sample/index.tsx',
     filetype = "typescriptreact",
     linenr   = 12,
@@ -81,35 +81,35 @@ local data = {
     after    = [[<Img>|</Img>]]
   },
   {
-    name     = "typescriptreact not close on exist tag" ,
+    name     = "8 typescriptreact close" ,
     filepath = './sample/index.tsx',
     filetype = "typescriptreact",
     linenr   = 12,
     key      = [[>]],
-    before   = [[<div|]],
-    after    = [[<div>|</div>]]
+    before   = [[<div class="abc"|]],
+    after    = [[<div class="abc">|</div>]]
   },
   {
-    name     = "typescriptreact not close on exist tag" ,
+    name     = "9 typescriptreact not close on exist tag" ,
     filepath = './sample/index.tsx',
     filetype = "typescriptreact",
     linenr   = 12,
+    key      = [[>]],
+    before   = [[<div><div|</div></div>]],
+    after    = [[<div><div>|</div></div>]]
+  },
+  {
+    name     = "10 typescriptreact close on inline script" ,
+    filepath = './sample/index.tsx',
+    filetype = "typescriptreact",
+    linenr   = 9,
     key      = [[>]],
     before   = [[const a = () => <div|]],
     after    = [[const a = () => <div>|</div>]]
   },
+  {
 
-  {
-    name     = "typescriptreact close tag" ,
-    filepath = './sample/index.tsx',
-    filetype = "typescriptreact",
-    linenr   = 12,
-    key      = [[>]],
-    before   = [[<Img|]],
-    after    = [[<Img>|</Img>]]
-  },
-  {
-    name     = "typescriptreact not close on close tag" ,
+    name     = "11 typescriptreact not close on close tag" ,
     filepath = './sample/index.tsx',
     filetype = "typescriptreact",
     linenr   = 12,
@@ -118,7 +118,7 @@ local data = {
     after    = [[<button className="btn " onClick={()}> </button>|]]
   },
   {
-    name     = "typescriptreact not close on expresion" ,
+    name     = "12 typescriptreact not close on expresion" ,
     filepath = './sample/index.tsx',
     filetype = "typescriptreact",
     linenr   = 12,
@@ -127,7 +127,7 @@ local data = {
     after    = [[<button className="btn " onClick={(>|)}> </button> ]]
   },
   {
-    name     = "typescriptreact not close on script" ,
+    name     = "13 typescriptreact not close on typescript" ,
     filepath = './sample/index.tsx',
     filetype = "typescriptreact",
     linenr   = 6,
@@ -137,7 +137,7 @@ local data = {
   },
 
   {
-    name     = "typescriptreact not close on script" ,
+    name     = "14 typescriptreact not close on script" ,
     filepath = './sample/index.tsx',
     filetype = "typescriptreact",
     linenr   = 6,
@@ -146,7 +146,7 @@ local data = {
     after    = [[{(card.data >| 0) && <div></div>}]]
   },
   {
-    name     = "vue auto close tag" ,
+    name     = "15 vue auto close tag" ,
     filepath = './sample/index.vue',
     filetype = "vue",
     linenr   = 4,
@@ -155,7 +155,7 @@ local data = {
     after    = [[<Img>|</Img>]]
   },
   {
-    name     = "vue not close on script",
+    name     = "16 vue not close on script",
     filepath = './sample/index.vue',
     filetype = "vue",
     linenr   = 12,
@@ -197,7 +197,7 @@ local function Test(test_data)
         local result = vim.fn.getline(line)
         local pos = vim.fn.getpos('.')
         eq(after, result , "\n\n [ERROR TEXT]: " .. value.name .. "\n")
-        eq(p_after, pos[3] + 1, "\n\n [ERROR POS]: " .. value.name .. "\n")
+        eq(p_after, pos[3] +1, "\n\n [ERROR POS]: " .. value.name .. "\n")
       else
         eq(false, true, "\n\n file not exist " .. value.filepath .. "\n")
       end
