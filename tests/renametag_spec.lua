@@ -39,6 +39,15 @@ local data = {
     after    = [[<lala| class="lla"> dsadsa </lala|> ]]
   },
   {
+    name     = "html rename close tag with attr" ,
+    filepath = './sample/index.html',
+    filetype = "html",
+    linenr   = 10,
+    key      = [[ciwlala]],
+    before   = [[<div class="lla"> dsadsa </di|v> ]],
+    after    = [[<lala class="lla"> dsadsa </lala|> ]]
+  },
+  {
     name     = "html not rename close tag on char <" ,
     filepath = './sample/index.html',
     filetype = "html",
@@ -48,13 +57,27 @@ local data = {
     after    = [[<div| class="lla"> dsadsa |</button> ]]
   },
   {
-    name     = "html rename close tag with attr" ,
+    name     = "html not rename close tag with not valid" ,
     filepath = './sample/index.html',
     filetype = "html",
-    linenr   = 10,
+    linenr   = 12,
     key      = [[ciwlala]],
-    before   = [[<div class="lla"> dsadsa </di|v> ]],
-    after    = [[<lala class="lla"> dsadsa </lala|> ]]
+    before   = {
+      [[<di|v class="lla" ]],
+      [[ dsadsa </div>]]
+    },
+    after    = [[<lala class="lla" ]]
+  },
+  {
+    name     = "html not rename close tag with not valid" ,
+    filepath = './sample/index.html',
+    filetype = "html",
+    linenr   = 12,
+    key      = [[ciwlala]],
+    before   = {
+      [[<div class="lla" </d|iv>]],
+    },
+    after    = [[<div class="lla" </l|ala>]]
   },
   {
     name     = "typescriptreact rename open tag" ,
@@ -99,21 +122,36 @@ autotag.test = true
 local function Test(test_data)
   for _, value in pairs(test_data) do
     it("test "..value.name, function()
-      local before = string.gsub(value.before , '%|' , "")
-      local after = string.gsub(value.after , '%|' , "")
-      local p_before = string.find(value.before , '%|')
-      local p_after = string.find(value.after , '%|')
-      local line =value.linenr
+      local text_before={}
+      local pos_before={
+        linenr = value.linenr,
+        colnr=0
+      }
+      if not vim.tbl_islist(value.before) then
+        value.before = {value.before}
+      end
+      local numlnr = 0
+      for _, text in pairs(value.before) do
+        local txt = string.gsub(text, '%|' , "")
+        table.insert(text_before, txt )
+        if string.match( text, "%|") then
+          pos_before.colnr = string.find(text, '%|')
+          pos_before.linenr = pos_before.linenr + numlnr 
+        end
+        numlnr =  numlnr + 1
+      end
+      local after = string.gsub(value.after, '%|' , "")
       vim.bo.filetype = value.filetype
       if vim.fn.filereadable(vim.fn.expand(value.filepath)) == 1 then
         vim.cmd(":bd!")
         vim.cmd(":e " .. value.filepath)
-        vim.fn.setline(line , before)
-        vim.fn.cursor(line, p_before)
+        local bufnr=vim.api.nvim_get_current_buf()
+        vim.api.nvim_buf_set_lines(bufnr, pos_before.linenr -1, pos_before.linenr +#text_before, false, text_before)
+        vim.fn.cursor(pos_before.linenr, pos_before.colnr)
         -- autotag.renameTag()
-        helpers.feed(value.key,'x')
+        helpers.feed(value.key, 'x')
         helpers.feed("<esc>",'x')
-        local result = vim.fn.getline(line)
+        local result = vim.fn.getline(pos_before.linenr)
         eq(after, result , "\n\n ERROR: " .. value.name .. "\n")
       else
         eq(false, true, "\n\n file not exist " .. value.filepath .. "\n")

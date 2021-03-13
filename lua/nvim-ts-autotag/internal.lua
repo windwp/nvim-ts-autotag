@@ -210,7 +210,16 @@ local function replaceTextNode(node, tag_name)
   end
 end
 
-local function checkStartTag()
+local function  check_tag_correct(node)
+  if node == nil  then return false end
+  local texts = ts_utils.get_node_text(node)
+  if string.match(texts[1],"^%<") and string.match(texts[#texts],"%>$") then
+    return true
+  end
+  return false
+end
+
+local function rename_start_tag()
   local ts_tag = get_ts_tag()
   local tag_node     = find_tag_node({
     tag_pattern      = ts_tag.start_tag_pattern,
@@ -218,8 +227,9 @@ local function checkStartTag()
   })
 
   if tag_node == nil then return end
-
+  if not check_tag_correct(tag_node:parent()) then return end
   local tag_name = get_tag_name(tag_node)
+
   tag_node    = find_parent_match({
     target    = tag_node,
     pattern   = ts_tag.element_tag,
@@ -227,6 +237,7 @@ local function checkStartTag()
   })
 
   if tag_node == nil then return end
+
   local close_tag_node = find_close_tag_node({
     target             = tag_node,
     tag_pattern        = ts_tag.close_tag_pattern,
@@ -251,7 +262,7 @@ local function checkStartTag()
   end
 end
 
-local function checkEndTag()
+local function rename_end_tag()
   local ts_tag = get_ts_tag()
   local tag_node = find_tag_node({
     tag_pattern = ts_tag.close_tag_pattern,
@@ -259,6 +270,7 @@ local function checkEndTag()
   })
 
   if tag_node == nil then return end
+  if not check_tag_correct(tag_node:parent()) then return end
   local tag_name = get_tag_name(tag_node)
   tag_node    = find_parent_match({
     target    = tag_node,
@@ -271,6 +283,7 @@ local function checkEndTag()
     tag_pattern        = ts_tag.start_tag_pattern,
     name_tag_pattern   = ts_tag.start_name_tag_pattern,
   })
+  if not check_tag_correct(start_tag_node:parent()) then return end
   if start_tag_node ~= nil then
     local start_tag_name = get_tag_name(start_tag_node)
     if tag_name ~= start_tag_name then
@@ -292,8 +305,8 @@ end
 
 M.renameTag = function ()
   if validate_rename() then
-    checkStartTag()
-    checkEndTag()
+    rename_start_tag()
+    rename_end_tag()
   end
 end
 
