@@ -192,9 +192,6 @@ local function checkCloseTag()
   return false
 end
 
-function M.code(cmd)
-  return vim.api.nvim_replace_termcodes(cmd, true, false, true)
-end
 M.closeTag = function ()
    local result, tag_name = checkCloseTag()
    if result == true and tag_name ~= nil then
@@ -282,9 +279,22 @@ local function checkEndTag()
   end
 end
 
+local function validate_rename()
+  local cursor = vim.api.nvim_win_get_cursor('.')
+  local line   = vim.fn.getline(cursor[1])
+  local char   = line:sub(cursor[2] + 1, cursor[2] + 1)
+  -- only rename when last character is a word
+  if string.match(char,'%w') then
+    return true
+  end
+  return false
+end
+
 M.renameTag = function ()
-  checkStartTag()
-  checkEndTag()
+  if validate_rename() then
+    checkStartTag()
+    checkEndTag()
+  end
 end
 
 M.attach = function (bufnr)

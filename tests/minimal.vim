@@ -17,7 +17,6 @@ set nocindent
 set nosmartindent
 set indentexpr=
 
-TSUpdate
 
 lua << EOF
 

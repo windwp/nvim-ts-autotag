@@ -39,6 +39,15 @@ local data = {
     after    = [[<lala| class="lla"> dsadsa </lala|> ]]
   },
   {
+    name     = "html not rename close tag on char <" ,
+    filepath = './sample/index.html',
+    filetype = "html",
+    linenr   = 10,
+    key      = [[i<]],
+    before   = [[<div class="lla"> dsadsa |/button> ]],
+    after    = [[<div| class="lla"> dsadsa |</button> ]]
+  },
+  {
     name     = "html rename close tag with attr" ,
     filepath = './sample/index.html',
     filetype = "html",
