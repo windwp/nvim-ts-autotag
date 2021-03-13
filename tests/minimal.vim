@@ -22,4 +22,8 @@ local _, ts_utils = pcall(require, 'nvim-treesitter.ts_utils')
 _G.T=ts_utils
 require("plenary/busted")
 require("nvim-ts-autotag").setup()
+luafile ./tests/closetag_spec.lua
 EOF
+
+TSInstall
+checkhealth

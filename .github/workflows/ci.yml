@@ -18,7 +18,6 @@ jobs:
 
       - name: Prepare
         run: |
-          sudo apt install fd-find
           mkdir -p ~/.vim/autoload
           git clone --depth 1 https://github.com/nvim-lua/plenary.nvim ~/.vim/autoload/plenary.nvim
           git clone --depth 1 https://github.com/nvim-lua/popup.nvim ~/.vim/autoload/popup.nvim
