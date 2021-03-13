@@ -17,8 +17,8 @@ set nocindent
 set nosmartindent
 set indentexpr=
 
-TSInstall
-checkhealth
+TSUpdate
+
 lua << EOF
 
 local _, ts_utils = pcall(require, 'nvim-treesitter.ts_utils')
