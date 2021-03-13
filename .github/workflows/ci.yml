@@ -24,6 +24,9 @@ jobs:
           git clone --depth 1 https://github.com/nvim-treesitter/nvim-treesitter ~/.vim/autoload/nvim-treesitter
           git clone --depth 1 https://github.com/nvim-treesitter/playground ~/.vim/autoload/playground
           ln -s $(pwd) ~/.vim/autoload
+      - name: TSInstall
+        run: |
+          nvim --headless -c "TSInstallSync all" -c "q"
       - name: Run tests
         run: |
           curl -OL https://raw.githubusercontent.com/norcalli/bot-ci/master/scripts/github-actions-setup.sh
