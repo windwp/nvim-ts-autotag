@@ -6,7 +6,7 @@ local configs = require'nvim-treesitter.configs'
 local M = {}
 
 M.tbl_filetypes = {
-  'html', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'svelte', 'vue'
+  'html', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'svelte', 'vue', 'tsx', 'jsx'
 }
 
 M.tbl_skipTag = {
@@ -313,7 +313,7 @@ end
 M.attach = function (bufnr)
  local config = configs.get_module('autotag')
  M.setup(config)
- if is_in_table(M.tbl_filetypes,vim.bo.filetype) then
+  if is_in_table(M.tbl_filetypes, vim.bo.filetype) then
    vim.cmd[[inoremap <silent> <buffer> > ><c-c>:lua require('nvim-ts-autotag.internal').closeTag()<CR>a]]
    bufnr = bufnr or vim.api.nvim_get_current_buf()
    if M.enableRename == true then
