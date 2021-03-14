@@ -6,7 +6,7 @@ local configs = require'nvim-treesitter.configs'
 local M = {}
 
 M.tbl_filetypes = {
-  'html', 'xml', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'svelte', 'vue'
+  'html', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'svelte', 'vue'
 }
 
 M.tbl_skipTag = {

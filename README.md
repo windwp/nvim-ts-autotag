@@ -1,8 +1,8 @@
 # nvim-ts-autotag
 
-Use treesitter to **autoclose** and **autorename** xml tag
+Use treesitter to **autoclose** and **autorename** html tag
 
-It work with html,xml,tsx,vue,svelte.
+It work with html,tsx,vue,svelte.
 
 ## Usage
 
@@ -37,7 +37,7 @@ require('nvim-ts-autotag').setup()
 
 ``` lua
 local filetypes = {
-  'html', 'xml', 'javascript', 'javascriptreact', 'typescriptreact', 'svelte', 'vue'
+  'html', 'javascript', 'javascriptreact', 'typescriptreact', 'svelte', 'vue'
 }
 local skip_tags = {
   'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'slot',
