@@ -1,4 +1,9 @@
 local ts = require 'nvim-treesitter.configs'
+
+if not _G.test_rename then
+  return
+end
+
 local helpers = {}
 ts.setup {
   ensure_installed = 'maintained',
@@ -68,6 +73,19 @@ local data = {
     },
     after    = [[<lala class="lla" ]]
   },
+--   {
+--     only=true,
+--     name     = "html not rename close tag if it have parent node map with child nod" ,
+--     filepath = './sample/index.html',
+--     filetype = "html",
+--     linenr   = 12,
+--     key      = [[ciwlala]],
+--     before   = {
+--       [[<d|iv> </div>]],
+--       [[<div>  </div>"]]
+--     },
+--     after    = [[<d|iv> </div>]]
+--   },
   {
     name     = "html not rename close tag with not valid" ,
     filepath = './sample/index.html',

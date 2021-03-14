@@ -22,8 +22,9 @@ lua << EOF
 
 local _, ts_utils = pcall(require, 'nvim-treesitter.ts_utils')
 _G.T=ts_utils
+_G.test_rename = true
+_G.test_close = true
 require("plenary/busted")
 require("nvim-ts-autotag").setup()
-
 EOF
 

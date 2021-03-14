@@ -1,3 +1,8 @@
+
+if not _G.test_close then
+  return
+end
+
 local ts = require 'nvim-treesitter.configs'
 local helpers = {}
 ts.setup {
@@ -172,8 +177,6 @@ for _, value in pairs(data) do
   end
 end
 if #run_data == 0 then run_data = data end
-local autotag = require('nvim-ts-autotag')
-autotag.enableRename = false
 
 local _, ts_utils = pcall(require, 'nvim-treesitter.ts_utils')
 _G.TU=ts_utils
