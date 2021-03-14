@@ -173,7 +173,6 @@ for _, value in pairs(data) do
 end
 if #run_data == 0 then run_data = data end
 local autotag = require('nvim-ts-autotag')
-autotag.test = true
 autotag.enableRename = false
 
 local _, ts_utils = pcall(require, 'nvim-treesitter.ts_utils')
