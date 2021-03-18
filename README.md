@@ -10,6 +10,7 @@ It work with html,tsx,vue,svelte.
 Before        Input         After
 ------------------------------------
 <div           >         <div></div>
+<div></div>    ciwspan   <span></span>
 ------------------------------------
 ```
 
