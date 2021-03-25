@@ -62,7 +62,7 @@ M.is_supported = function (lang)
 end
 
 local function is_jsx()
-  return  is_in_table({'typescriptreact', 'javascriptreact', 'javascript', 'typescript'}, vim.bo.filetype)
+  return  is_in_table({'typescriptreact', 'javascriptreact', 'javascript.jsx', 'typescript.tsx', 'javascript', 'typescript'}, vim.bo.filetype)
 end
 
 local function get_ts_tag()
