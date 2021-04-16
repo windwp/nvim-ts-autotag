@@ -1,5 +1,3 @@
-
-
 local _, ts_utils = pcall(require, 'nvim-treesitter.ts_utils')
 local configs = require'nvim-treesitter.configs'
 local parsers = require'nvim-treesitter.parsers'
@@ -177,7 +175,7 @@ local function find_close_tag_node(opt)
 end
 
 
-local function checkCloseTag()
+local function check_close_tag()
   local ts_tag = get_ts_tag()
   local tag_node     = find_tag_node({
     tag_pattern      = ts_tag.start_tag_pattern,
@@ -209,21 +207,21 @@ local function checkCloseTag()
         end
       end
     end
-    return true,tag_name
+    return true, tag_name
   end
   return false
 end
 
-M.closeTag = function ()
+M.close_tag = function ()
    parsers.get_parser():parse()
-   local result, tag_name = checkCloseTag()
+   local result, tag_name = check_close_tag()
    if result == true and tag_name ~= nil then
      vim.cmd(string.format([[normal! a</%s>]],tag_name))
      vim.cmd[[normal! F>]]
    end
 end
 
-local function replaceTextNode(node, tag_name)
+local function replace_text_node(node, tag_name)
   if node == nil then return end
   local start_row, start_col, end_row, end_col = node:range()
   if start_row == end_row then
@@ -233,7 +231,7 @@ local function replaceTextNode(node, tag_name)
   end
 end
 
-local function  check_tag_correct(node)
+local function check_tag_correct(node)
   if node == nil  then return false end
   local texts = ts_utils.get_node_text(node)
   if string.match(texts[1],"^%<") and string.match(texts[#texts],"%>$") then
@@ -270,7 +268,7 @@ local function rename_start_tag()
   if close_tag_node ~= nil then
     local close_tag_name = get_tag_name(close_tag_node)
     if tag_name ~=close_tag_name then
-      replaceTextNode(close_tag_node, tag_name)
+      replace_text_node(close_tag_node, tag_name)
     end
   else
     close_tag_node = find_child_match({
@@ -280,7 +278,7 @@ local function rename_start_tag()
     if close_tag_node ~=nil then
       local close_tag_name = get_tag_name(close_tag_node)
       if close_tag_name=='</>' then
-        replaceTextNode(close_tag_node, "</"..tag_name..">")
+        replace_text_node(close_tag_node, "</"..tag_name..">")
       end
     end
   end
@@ -311,7 +309,7 @@ local function rename_end_tag()
   if start_tag_node ~= nil then
     local start_tag_name = get_tag_name(start_tag_node)
     if tag_name ~= start_tag_name then
-      replaceTextNode(start_tag_node, tag_name)
+      replace_text_node(start_tag_node, tag_name)
     end
   end
 end
@@ -327,7 +325,7 @@ local function validate_rename()
   return false
 end
 
-M.renameTag = function ()
+M.rename_tag = function ()
   if validate_rename() then
     parsers.get_parser():parse()
     rename_start_tag()
@@ -341,13 +339,13 @@ M.attach = function (bufnr,lang)
   M.setup(config)
   if is_in_table(M.tbl_filetypes, vim.bo.filetype) then
     if M.enable_close == true then
-      vim.cmd[[inoremap <silent> <buffer> > ><c-c>:lua require('nvim-ts-autotag.internal').closeTag()<CR>a]]
+      vim.cmd[[inoremap <silent> <buffer> > ><c-c>:lua require('nvim-ts-autotag.internal').close_tag()<CR>a]]
     end
     if M.enable_rename == true then
       bufnr = bufnr or vim.api.nvim_get_current_buf()
       vim.cmd("augroup nvim_ts_xmltag_" .. bufnr)
       vim.cmd[[autocmd!]]
-      vim.cmd[[autocmd InsertLeave <buffer> call v:lua.require('nvim-ts-autotag.internal').renameTag() ]]
+      vim.cmd[[autocmd InsertLeave <buffer> call v:lua.require('nvim-ts-autotag.internal').rename_tag() ]]
       vim.cmd[[augroup end]]
     end
  end
