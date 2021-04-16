@@ -124,6 +124,15 @@ local data = {
     before   = [[<div class="lla"> dsadsa </di|v> ]],
     after    = [[<lala class="lla"> dsadsa </lala|> ]]
   },
+  {
+    name     = "17 typescriptreact nested indentifer " ,
+    filepath = './sample/index.tsx',
+    filetype = "typescriptreact",
+    linenr   = 12,
+    key      = [[ciwlala]],
+    before   = [[<Opt.In|put></Opt.Input> ]],
+    after    = [[<Opt.lala>|</Opt.lala> ]]
+  }
 }
 
 local run_data = {}
@@ -154,7 +163,7 @@ local function Test(test_data)
         table.insert(text_before, txt )
         if string.match( text, "%|") then
           pos_before.colnr = string.find(text, '%|')
-          pos_before.linenr = pos_before.linenr + numlnr 
+          pos_before.linenr = pos_before.linenr + numlnr
         end
         numlnr =  numlnr + 1
       end

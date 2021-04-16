@@ -2,6 +2,7 @@
 
 local _, ts_utils = pcall(require, 'nvim-treesitter.ts_utils')
 local configs = require'nvim-treesitter.configs'
+local parsers = require'nvim-treesitter.parsers'
 
 local M = {}
 
@@ -26,13 +27,14 @@ local HTML_TAG = {
   skip_tag_pattern       = {'quoted_attribute_value', 'end_tag'},
 }
 
+local ERROR_TAG = "ERROR"
 local JSX_TAG = {
   start_tag_pattern       = 'jsx_opening_element',
-  start_name_tag_pattern  = 'identifier',
+  start_name_tag_pattern  = 'identifier|nested_identifier',
   end_tag_pattern         = "jsx_closing_element",
   end_name_tag_pattern    = "identifier",
   close_tag_pattern       = 'jsx_closing_element',
-  close_name_tag_pattern  = 'identifier',
+  close_name_tag_pattern  = 'identifier|nested_identifier',
   element_tag             = 'jsx_element',
   skip_tag_pattern        = {'jsx_closing_element','jsx_expression', 'string', 'jsx_attribute'},
 }
@@ -62,7 +64,9 @@ M.is_supported = function (lang)
 end
 
 local function is_jsx()
-  return  is_in_table({'typescriptreact', 'javascriptreact', 'javascript.jsx', 'typescript.tsx', 'javascript', 'typescript'}, vim.bo.filetype)
+  return is_in_table({
+        'typescriptreact', 'javascriptreact', 'javascript.jsx', 'typescript.tsx', 'javascript', 'typescript'},
+    vim.bo.filetype)
 end
 
 local function get_ts_tag()
@@ -97,17 +101,20 @@ local function find_parent_match(opts)
   assert(target ~= nil, "find parent target not nil :" .. pattern)
   local cur_depth = 0
   local cur_node = target
-  while cur_node ~= nil do
-    local node_type = cur_node:type()
-    if is_in_table(skip_tag_pattern,node_type) then return nil end
-    if node_type ~= nil and node_type == pattern then
-      return cur_node
-    elseif cur_depth < max_depth then
-      cur_depth = cur_depth + 1
-      cur_node = cur_node:parent()
-    else
-      return nil
-    end
+  local tbl_pattern = vim.split(pattern, "|")
+  for _,ptn in pairs(tbl_pattern) do
+      while cur_node ~= nil do
+        local node_type = cur_node:type()
+        if is_in_table(skip_tag_pattern, node_type) then return nil end
+      if node_type ~= nil and node_type == ptn then
+          return cur_node
+        elseif cur_depth < max_depth then
+          cur_depth = cur_depth + 1
+          cur_node = cur_node:parent()
+        else
+          cur_node = nil
+        end
+      end
   end
   return nil end
 
@@ -121,6 +128,7 @@ end
 
 local function find_tag_node(opt)
   local target           = opt.target or ts_utils.get_node_at_cursor()
+
   local tag_pattern      = opt.tag_pattern
   local name_tag_pattern = opt.name_tag_pattern
   local skip_tag_pattern = opt.skip_tag_pattern
@@ -140,8 +148,20 @@ local function find_tag_node(opt)
     })
   end
   if node == nil then return nil end
-  local tbl_name_pattern = vim.split(name_tag_pattern, '>')
   local name_node = node
+  local tbl_name_pattern={}
+  if string.match(name_tag_pattern,"%|") then
+    tbl_name_pattern = vim.split(name_tag_pattern, '|')
+    for _, pattern in pairs(tbl_name_pattern) do
+      name_node = find_child_match({
+        target  = node,
+        pattern = pattern
+      })
+      if name_node then return name_node end
+    end
+  end
+
+  tbl_name_pattern = vim.split(name_tag_pattern, '>')
   for _, pattern in pairs(tbl_name_pattern) do
     name_node = find_child_match({
       target  = name_node,
@@ -152,7 +172,7 @@ local function find_tag_node(opt)
 end
 
 local function find_close_tag_node(opt)
-  opt.find_child=true
+  opt.find_child = true
   return find_tag_node(opt)
 end
 
@@ -195,6 +215,7 @@ local function checkCloseTag()
 end
 
 M.closeTag = function ()
+   parsers.get_parser():parse()
    local result, tag_name = checkCloseTag()
    if result == true and tag_name ~= nil then
      vim.cmd(string.format([[normal! a</%s>]],tag_name))
@@ -231,10 +252,11 @@ local function rename_start_tag()
   if tag_node == nil then return end
   if not check_tag_correct(tag_node:parent()) then return end
   local tag_name = get_tag_name(tag_node)
+  local parent_node = tag_node
 
   tag_node    = find_parent_match({
-    target    = tag_node,
-    pattern   = ts_tag.element_tag,
+    target    = parent_node,
+    pattern   = ts_tag.element_tag .. "|" .. ERROR_TAG,
     max_depth = 2
   })
 
@@ -253,7 +275,7 @@ local function rename_start_tag()
   else
     close_tag_node = find_child_match({
       target = tag_node,
-      pattern = 'ERROR'
+      pattern = ERROR_TAG
     })
     if close_tag_node ~=nil then
       local close_tag_name = get_tag_name(close_tag_node)
@@ -307,14 +329,16 @@ end
 
 M.renameTag = function ()
   if validate_rename() then
+    parsers.get_parser():parse()
     rename_start_tag()
     rename_end_tag()
   end
 end
 
-M.attach = function (bufnr)
- local config = configs.get_module('autotag')
- M.setup(config)
+M.attach = function (bufnr,lang)
+  M.lang = lang
+  local config = configs.get_module('autotag')
+  M.setup(config)
   if is_in_table(M.tbl_filetypes, vim.bo.filetype) then
     if M.enable_close == true then
       vim.cmd[[inoremap <silent> <buffer> > ><c-c>:lua require('nvim-ts-autotag.internal').closeTag()<CR>a]]

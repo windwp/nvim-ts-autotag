@@ -1,11 +1,12 @@
 set rtp +=.
-set rtp +=~/.vim/autoload/plenary.nvim/
-set rtp +=~/.vim/autoload/nvim-treesitter
-set rtp +=~/.vim/autoload/playground/
+set rtp +=../plenary.nvim/
+set rtp +=../nvim-treesitter
+set rtp +=../playground/
 
 runtime! plugin/plenary.vim
 runtime! plugin/nvim-treesitter.vim
 runtime! plugin/playground.vim
+runtime! plugin/nvim-ts-autotag.vim
 
 set noswapfile
 set nobackup

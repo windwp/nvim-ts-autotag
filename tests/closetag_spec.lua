@@ -168,6 +168,15 @@ local data = {
     before   = [[const data:Array<string| ]],
     after    = [[const data:Array<string>| ]]
   },
+  {
+    name     = "17 typescriptreact nested indentifer " ,
+    filepath = './sample/index.tsx',
+    filetype = "typescriptreact",
+    linenr   = 12,
+    key      = [[>]],
+    before   = [[<Opt.Input| ]],
+    after    = [[<Opt.Input>|</Opt.Input> ]]
+  },
 }
 local run_data = {}
 for _, value in pairs(data) do
@@ -180,6 +189,7 @@ if #run_data == 0 then run_data = data end
 
 local _, ts_utils = pcall(require, 'nvim-treesitter.ts_utils')
 _G.TU=ts_utils
+
 local function Test(test_data)
   for _, value in pairs(test_data) do
     it("test "..value.name, function()
@@ -193,7 +203,7 @@ local function Test(test_data)
         vim.cmd(":e " .. value.filepath)
         vim.bo.filetype = value.filetype
         vim.fn.setline(line , before)
-        vim.fn.cursor(line, p_before-1)
+        vim.fn.cursor(line, p_before -1)
         -- autotag.closeTag()
         helpers.insert(value.key)
         local result = vim.fn.getline(line)
