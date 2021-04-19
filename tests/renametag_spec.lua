@@ -132,7 +132,47 @@ local data = {
     key      = [[ciwlala]],
     before   = [[<Opt.In|put></Opt.Input> ]],
     after    = [[<Opt.lala>|</Opt.lala> ]]
-  }
+  },
+    {
+        name     = "18 rename empty node " ,
+        filepath = './sample/index.tsx',
+        filetype = "typescriptreact",
+        linenr   = 12,
+        key      = [[ilala]],
+        before   = [[<|><div></div></>]],
+        after    = [[<|lala><div></div></lala>]]
+    },
+    -- {
+    --     only = true,
+    --     name     = "18 rename node to empty node " ,
+    --     filepath = './sample/index.tsx',
+    --     filetype = "typescriptreact",
+    --     linenr   = 12,
+    --     key      = [[ciw<esc>]],
+    --     before   = [[<la|la><div></div></lala>]],
+    --     after    = [[<|><div></div></>]]
+    -- },
+
+    -- TODO close tag with empty
+    -- {
+    --     only = true,
+    --     name     = "18 rename end empty node " ,
+    --     filepath = './sample/index.tsx',
+    --     filetype = "typescriptreact",
+    --     linenr   = 12,
+    --     key      = [[ilala]],
+    --     before   = [[<span><> <div></div></|><span>]],
+    --     after    = [[<span><|lala><div></div></lala></span>]]
+    -- },
+    -- {
+    --     name     = "19 rename end empty node " ,
+    --     filepath = './sample/index.tsx',
+    --     filetype = "typescriptreact",
+    --     linenr   = 12,
+    --     key      = [[ilala]],
+    --     before   = [[<><div></div></|>]],
+    --     after    = [[<|lala><div></div></lala>]]
+    -- }
 }
 
 local run_data = {}

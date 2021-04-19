@@ -1,6 +1,7 @@
 local _, ts_utils = pcall(require, 'nvim-treesitter.ts_utils')
 local configs = require'nvim-treesitter.configs'
 local parsers = require'nvim-treesitter.parsers'
+-- local log = require('nvim-ts-autotag._log')
 
 local M = {}
 
@@ -126,7 +127,6 @@ end
 
 local function find_tag_node(opt)
     local target           = opt.target or ts_utils.get_node_at_cursor()
-
     local tag_pattern      = opt.tag_pattern
     local name_tag_pattern = opt.name_tag_pattern
     local skip_tag_pattern = opt.skip_tag_pattern
@@ -169,7 +169,7 @@ local function find_tag_node(opt)
     return name_node
 end
 
-local function find_close_tag_node(opt)
+local function find_child_tag_node(opt)
     opt.find_child = true
     return find_tag_node(opt)
 end
@@ -194,7 +194,7 @@ local function check_close_tag()
             max_depth = 2
         })
         if tag_node ~= nil then
-            local close_tag_node = find_close_tag_node({
+            local close_tag_node = find_child_tag_node({
                 target             = element_node,
                 tag_pattern        = ts_tag.end_tag_pattern,
                 name_tag_pattern   = ts_tag.end_name_tag_pattern,
@@ -231,13 +231,27 @@ local function replace_text_node(node, tag_name)
     end
 end
 
-local function check_tag_correct(node)
+
+local function validate_tag_regex(node,start_regex,end_regex)
     if node == nil  then return false end
     local texts = ts_utils.get_node_text(node)
-    if string.match(texts[1],"^%<") and string.match(texts[#texts],"%>$") then
-        return true
-    end
+    if
+        string.match(texts[1],start_regex)
+        and string.match(texts[#texts],end_regex)
+    then return true end
     return false
+end
+
+-- local function validate_tag(node)
+--     return validate_tag_regex(node,"^%<","%>$")
+-- end
+
+local function validate_start_tag(node)
+   return validate_tag_regex(node,"^%<%w","%>$")
+end
+
+local function validate_close_tag(node)
+   return validate_tag_regex(node,"^%<%/%w","%>$")
 end
 
 local function rename_start_tag()
@@ -248,7 +262,7 @@ local function rename_start_tag()
     })
 
     if tag_node == nil then return end
-    if not check_tag_correct(tag_node:parent()) then return end
+    if not validate_start_tag(tag_node:parent()) then return end
     local tag_name = get_tag_name(tag_node)
     local parent_node = tag_node
 
@@ -260,25 +274,26 @@ local function rename_start_tag()
 
     if tag_node == nil then return end
 
-    local close_tag_node = find_close_tag_node({
+    local close_tag_node = find_child_tag_node({
         target             = tag_node,
         tag_pattern        = ts_tag.close_tag_pattern,
         name_tag_pattern   = ts_tag.close_name_tag_pattern,
     })
+
     if close_tag_node ~= nil then
-        local close_tag_name = get_tag_name(close_tag_node)
-        if tag_name ~=close_tag_name then
-            replace_text_node(close_tag_node, tag_name)
-        end
-    else
-        close_tag_node = find_child_match({
+        local error_node = find_child_match({
             target = tag_node,
             pattern = ERROR_TAG
         })
-        if close_tag_node ~=nil then
+        if error_node == nil then
             local close_tag_name = get_tag_name(close_tag_node)
-            if close_tag_name=='</>' then
-                replace_text_node(close_tag_node, "</"..tag_name..">")
+            if tag_name ~= close_tag_name then
+                replace_text_node(close_tag_node, tag_name)
+            end
+        else
+            local error_tag = get_tag_name(error_node)
+            if error_tag=='</>' then
+                replace_text_node(error_node, "</" .. tag_name .. ">")
             end
         end
     end
@@ -292,7 +307,7 @@ local function rename_end_tag()
     })
 
     if tag_node == nil then return end
-    if not check_tag_correct(tag_node:parent()) then return end
+    if not validate_close_tag(tag_node:parent()) then return end
     local tag_name = get_tag_name(tag_node)
     tag_node    = find_parent_match({
         target    = tag_node,
@@ -300,12 +315,12 @@ local function rename_end_tag()
         max_depth = 2
     })
     if tag_node == nil then return end
-    local start_tag_node = find_close_tag_node({
+    local start_tag_node = find_child_tag_node({
         target             = tag_node,
         tag_pattern        = ts_tag.start_tag_pattern,
         name_tag_pattern   = ts_tag.start_name_tag_pattern,
     })
-    if not check_tag_correct(start_tag_node:parent()) then return end
+    if not validate_start_tag(start_tag_node:parent()) then return end
     if start_tag_node ~= nil then
         local start_tag_name = get_tag_name(start_tag_node)
         if tag_name ~= start_tag_name then
