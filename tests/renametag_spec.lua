@@ -1,5 +1,7 @@
 local ts = require 'nvim-treesitter.configs'
 
+local log=require('nvim-ts-autotag._log')
+
 if not _G.test_rename then
   return
 end
@@ -218,6 +220,7 @@ local function Test(test_data)
         -- autotag.renameTag()
         helpers.feed(value.key, 'x')
         helpers.feed("<esc>",'x')
+        vim.wait(10)
         local result = vim.fn.getline(pos_before.linenr)
         eq(after, result , "\n\n ERROR: " .. value.name .. "\n")
       else
@@ -228,6 +231,6 @@ local function Test(test_data)
 end
 
 describe('[rename tag]', function()
-  Test(run_data)
+    Test(run_data)
 end)
 
