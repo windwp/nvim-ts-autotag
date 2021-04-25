@@ -16,7 +16,7 @@ Before        Input         After
 
 
 ## Setup
-Neovim 0.5 with and nvim-treesitter to work
+Neovim 0.5 and nvim-treesitter to work
 
 User treesitter setup
 ```lua
