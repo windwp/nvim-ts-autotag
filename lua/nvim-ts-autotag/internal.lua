@@ -6,7 +6,8 @@ local parsers = require'nvim-treesitter.parsers'
 local M = {}
 
 M.tbl_filetypes = {
-    'html', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'svelte', 'vue', 'tsx', 'jsx'
+    'html', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'svelte', 'vue', 'tsx', 'jsx',
+    'glimmer','handlebars','hbs'
 }
 
 M.tbl_skipTag = {
@@ -39,6 +40,17 @@ local JSX_TAG = {
 }
 
 
+local HBS_TAG = {
+    start_tag_pattern       = 'element_node_start',
+    start_name_tag_pattern  = 'tag_name',
+    end_tag_pattern         = "element_node_end",
+    end_name_tag_pattern    = "tag_name",
+    close_tag_pattern       = 'element_node_end',
+    close_name_tag_pattern  = 'tag_name',
+    element_tag             = 'element_node',
+    skip_tag_pattern        = {'element_node_end', 'attribute_node', 'concat_statement' },
+}
+
 M.enable_rename = true
 M.enable_close  = true
 
@@ -62,16 +74,23 @@ M.is_supported = function (lang)
     return is_in_table(M.tbl_filetypes,lang)
 end
 
-local function is_jsx()
-    return is_in_table({
-        'typescriptreact', 'javascriptreact', 'javascript.jsx', 'typescript.tsx', 'javascript', 'typescript'},
-        vim.bo.filetype)
-end
 
 local function get_ts_tag()
-    local ts_tag = HTML_TAG
-    if is_jsx() then ts_tag = JSX_TAG end
-    return ts_tag
+    if is_in_table({
+        'typescriptreact', 'javascriptreact', 'javascript.jsx',
+        'typescript.tsx', 'javascript', 'typescript'},
+        vim.bo.filetype)
+    then
+        return JSX_TAG
+    end
+
+    if is_in_table({'glimmer', 'handlebars','hbs'},
+       vim.bo.filetype)
+    then
+        return HBS_TAG
+    end
+
+    return HTML_TAG
 end
 
 M.on_file_type = function ()
