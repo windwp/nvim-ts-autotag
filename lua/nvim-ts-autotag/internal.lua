@@ -1,7 +1,8 @@
 local _, ts_utils = pcall(require, 'nvim-treesitter.ts_utils')
 local configs = require'nvim-treesitter.configs'
 local parsers = require'nvim-treesitter.parsers'
--- local log = require('nvim-ts-autotag._log')
+local log = require('nvim-ts-autotag._log')
+-- local utils=require('nvim-ts-autotag.utils')
 
 local M = {}
 
@@ -15,8 +16,10 @@ M.tbl_skipTag = {
     'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr','menuitem'
 }
 
+local ERROR_TAG = "ERROR"
 
 local HTML_TAG = {
+    filetypes              = {'html'},
     start_tag_pattern      = 'start_tag',
     start_name_tag_pattern = 'tag_name',
     end_tag_pattern        = "end_tag",
@@ -27,8 +30,11 @@ local HTML_TAG = {
     skip_tag_pattern       = {'quoted_attribute_value', 'end_tag'},
 }
 
-local ERROR_TAG = "ERROR"
 local JSX_TAG = {
+    filetypes               = {
+        'typescriptreact', 'javascriptreact', 'javascript.jsx',
+        'typescript.tsx', 'javascript', 'typescript'},
+
     start_tag_pattern       = 'jsx_opening_element',
     start_name_tag_pattern  = 'identifier|nested_identifier',
     end_tag_pattern         = "jsx_closing_element",
@@ -41,6 +47,7 @@ local JSX_TAG = {
 
 
 local HBS_TAG = {
+    filetypes              = {'glimmer', 'handlebars','hbs'},
     start_tag_pattern       = 'element_node_start',
     start_name_tag_pattern  = 'tag_name',
     end_tag_pattern         = "element_node_end",
@@ -51,6 +58,24 @@ local HBS_TAG = {
     skip_tag_pattern        = {'element_node_end', 'attribute_node', 'concat_statement' },
 }
 
+
+local SVELTE_TAG = {
+    filetypes              = {'svelte'},
+    start_tag_pattern      = 'start_tag',
+    start_name_tag_pattern = 'tag_name',
+    end_tag_pattern        = "end_tag",
+    end_name_tag_pattern   = "tag_name",
+    close_tag_pattern      = 'ERROR',
+    close_name_tag_pattern = 'ERROR',
+    element_tag            = 'element',
+    skip_tag_pattern       = {'quoted_attribute_value', 'end_tag'},
+}
+
+local all_tag = {
+    HBS_TAG,
+    SVELTE_TAG,
+    JSX_TAG
+}
 M.enable_rename = true
 M.enable_close  = true
 
@@ -74,22 +99,22 @@ M.is_supported = function (lang)
     return is_in_table(M.tbl_filetypes,lang)
 end
 
+local buffer_tag={}
 
 local function get_ts_tag()
-    if is_in_table({
-        'typescriptreact', 'javascriptreact', 'javascript.jsx',
-        'typescript.tsx', 'javascript', 'typescript'},
-        vim.bo.filetype)
-    then
-        return JSX_TAG
+    local bufnr = vim.api.nvim_get_current_buf()
+
+    if buffer_tag[bufnr] then
+        return buffer_tag[bufnr]
     end
 
-    if is_in_table({'glimmer', 'handlebars','hbs'},
-       vim.bo.filetype)
-    then
-        return HBS_TAG
+    for _,value in pairs(all_tag) do
+        if is_in_table(value.filetypes,vim.bo.filetype) then
+            buffer_tag[bufnr] = value
+            return value
+        end
     end
-
+    buffer_tag[bufnr] = HTML_TAG
     return HTML_TAG
 end
 
@@ -166,7 +191,7 @@ local function find_tag_node(opt)
     end
     if node == nil then return nil end
     local name_node = node
-    local tbl_name_pattern={}
+    local tbl_name_pattern = {}
     if string.match(name_tag_pattern,"%|") then
         tbl_name_pattern = vim.split(name_tag_pattern, '|')
         for _, pattern in pairs(tbl_name_pattern) do
@@ -184,6 +209,11 @@ local function find_tag_node(opt)
             target  = name_node,
             pattern = pattern
         })
+    end
+
+    -- check current node is have same name of tag_match
+    if is_in_table(tbl_name_pattern, node:type())
+        then return node
     end
     return name_node
 end
@@ -310,11 +340,17 @@ local function rename_start_tag()
                 replace_text_node(close_tag_node, tag_name)
             end
         else
+
             local error_tag = get_tag_name(error_node)
             if error_tag=='</>' then
                 replace_text_node(error_node, "</" .. tag_name .. ">")
             end
+            -- have both parent node and child node is error
+            if close_tag_node:type() == ERROR_TAG then
+                replace_text_node(error_node, "</" .. tag_name .. ">")
+            end
         end
+
     end
 end
 
@@ -386,7 +422,8 @@ M.attach = function (bufnr,lang)
 end
 
 M.detach = function ( )
-
+    local bufnr = vim.api.nvim_get_current_buf()
+    buffer_tag[bufnr] = nil
 end
 
 -- _G.AUTO = M
