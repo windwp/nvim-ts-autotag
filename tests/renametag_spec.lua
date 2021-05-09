@@ -144,6 +144,24 @@ local data = {
         before   = [[<|><div></div></>]],
         after    = [[<|lala><div></div></lala>]]
     },
+    {
+        name     = "19 rename start tag on svelte " ,
+        filepath = './sample/index.svelte',
+        filetype = "svelte",
+        linenr   = 18,
+        key      = [[ciwlala]],
+        before   = [[<|data></data>]],
+        after    = [[<|lala></lala>]]
+    },
+    {
+        name     = "20 rename end tag on svelte " ,
+        filepath = './sample/index.svelte',
+        filetype = "svelte",
+        linenr   = 18,
+        key      = [[ciwlala]],
+        before   = [[<data></da|ta>]],
+        after    = [[<lala></lala>]]
+    },
     -- {
     --     only = true,
     --     name     = "18 rename node to empty node " ,

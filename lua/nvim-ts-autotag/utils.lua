@@ -20,11 +20,13 @@ end
 
 
 M.dump_node_text = function(target)
+    log.debug('=============================')
     for node in target:iter_children() do
         local node_type = node:type()
         local text = ts_utils.get_node_text(node)
         log.debug("type:" .. node_type .. " ")
         log.debug(text)
     end
+    log.debug('=============================')
 end
 return M
