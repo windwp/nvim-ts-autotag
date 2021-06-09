@@ -177,6 +177,15 @@ local data = {
     before   = [[<Opt.Input| ]],
     after    = [[<Opt.Input>|</Opt.Input> ]]
   },
+  {
+    name     = "18 php div " ,
+    filepath = './sample/index.php',
+    filetype = "php",
+    linenr   = 25,
+    key      = [[>]],
+    before   = [[<div| ]],
+    after    = [[<div>|</div> ]]
+  },
 }
 local run_data = {}
 for _, value in pairs(data) do

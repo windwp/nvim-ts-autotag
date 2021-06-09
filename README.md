@@ -2,7 +2,7 @@
 
 Use treesitter to **autoclose** and **autorename** html tag
 
-It work with html,tsx,vue,svelte.
+It work with html,tsx,vue,svelte,php.
 
 ## Usage
 
