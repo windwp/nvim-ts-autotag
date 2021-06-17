@@ -34,9 +34,11 @@ require('nvim-ts-autotag').setup()
 
 ```
 
-# Enable update on insert
+### Enable update on insert
 
-if you have that issue on you need to tell lsp diagnostic update in insert
+If you have that issue
+[#19](https://github.com/windwp/nvim-ts-autotag/issues/19)
+
 ```lua
 vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
     vim.lsp.diagnostic.on_publish_diagnostics,
