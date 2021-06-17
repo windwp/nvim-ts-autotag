@@ -34,6 +34,22 @@ require('nvim-ts-autotag').setup()
 
 ```
 
+# Enable update on insert
+
+if you have that issue on you need to tell lsp diagnostic update in insert
+```lua
+vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
+    vim.lsp.diagnostic.on_publish_diagnostics,
+    {
+        underline = true,
+        virtual_text = {
+            spacing = 5,
+            severity_limit = 'Warning',
+        },
+        update_in_insert = true,
+    }
+)
+```
 ## Default values
 
 ``` lua
