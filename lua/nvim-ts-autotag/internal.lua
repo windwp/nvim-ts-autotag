@@ -8,6 +8,7 @@ local M = {}
 
 M.tbl_filetypes = {
     'html', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'svelte', 'vue', 'tsx', 'jsx',
+    'xml',
     'php',
     'glimmer','handlebars','hbs'
 }
@@ -20,7 +21,7 @@ M.tbl_skipTag = {
 local ERROR_TAG = "ERROR"
 
 local HTML_TAG = {
-    filetypes              = {'html','php'},
+    filetypes              = {'html', 'php', 'xml'},
     start_tag_pattern      = 'start_tag',
     start_name_tag_pattern = 'tag_name',
     end_tag_pattern        = "end_tag",
