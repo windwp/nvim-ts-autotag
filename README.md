@@ -9,8 +9,8 @@ It work with html,tsx,vue,svelte,php.
 ``` text
 Before        Input         After
 ------------------------------------
-<div           >         <div></div>
-<div></div>    ciwspan   <span></span>
+<div           >              <div></div>
+<div></div>    ciwspan<esc>   <span></span>
 ------------------------------------
 ```
 
