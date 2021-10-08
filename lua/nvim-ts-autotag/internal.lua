@@ -265,6 +265,9 @@ end
 
 M.close_tag = function ()
     parsers.get_parser():parse()
+    local buf_parser = parsers.get_parser()
+    if not buf_parser then return end
+    buf_parser:parse()
     local result, tag_name = check_close_tag()
     if result == true and tag_name ~= nil then
         vim.cmd(string.format([[normal! a</%s>]],tag_name))
