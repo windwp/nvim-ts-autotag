@@ -389,7 +389,7 @@ local function rename_end_tag()
 end
 
 local function validate_rename()
-    local cursor = vim.api.nvim_win_get_cursor('.')
+    local cursor = vim.api.nvim_win_get_cursor(0)
     local line   = vim.fn.getline(cursor[1])
     local char   = line:sub(cursor[2] + 1, cursor[2] + 1)
     -- only rename when last character is a word
