@@ -2,7 +2,7 @@
 
 Use treesitter to **autoclose** and **autorename** html tag
 
-It work with html,tsx,vue,svelte,php.
+It work with html,tsx,vue,svelte,php,rescript.
 
 ## Usage
 
@@ -56,7 +56,7 @@ vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
 
 ``` lua
 local filetypes = {
-  'html', 'javascript', 'javascriptreact', 'typescriptreact', 'svelte', 'vue'
+  'html', 'javascript', 'javascriptreact', 'typescriptreact', 'svelte', 'vue', 'rescript'
 }
 local skip_tags = {
   'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'slot',
