@@ -3,8 +3,21 @@ if not _G.test_close then
   return
 end
 
+local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
 local ts = require 'nvim-treesitter.configs'
 local helpers = {}
+
+parser_config.rescript = {
+  install_info = {
+    url = "https://github.com/nkrkv/nvim-treesitter-rescript",
+    files = {"src/parser.c", "src/scanner.c"},
+    branch = "main",
+  },
+  maintainers = { "@nkrkv" },
+  filetype = "rescript",
+}
+
+
 ts.setup {
   ensure_installed = 'maintained',
   highlight = {enable = true},
@@ -185,6 +198,51 @@ local data = {
     key      = [[>]],
     before   = [[<div| ]],
     after    = [[<div>|</div> ]]
+  },
+  {
+    name = "19 rescript close tag",
+    filepath = './sample/index.res',
+    filetype = 'rescript',
+    linenr = 12,
+    key = [[>]],
+    before = [[<Img|]],
+    after = [[<Img>|</Img>]]
+  },
+  {
+    name = "20 rescript close",
+    filepath = './sample/index.res',
+    filetype = 'rescript',
+    linenr = 13,
+    key = [[>]],
+    before   = [[<div class="abc"|]],
+    after    = [[<div class="abc">|</div>]],
+  },
+  {
+    name     = "21 rescript not close on exist tag" ,
+    filepath = './sample/index.res',
+    filetype = "rescript",
+    linenr   = 14,
+    key      = [[>]],
+    before   = [[<div><div|</div></div>]],
+    after    = [[<div><div>|</div></div>]]
+  },
+  {
+    name     = "22 rescript not close on close tag" ,
+    filepath = './sample/index.res',
+    filetype = "rescript",
+    linenr   = 15,
+    key      = [[>]],
+    before   = [[<button onClick> </button|]],
+    after    = [[<button onClick> </button>|]]
+  },
+  {
+    name     = "23 rescrpt not close on expresion" ,
+    filepath = './sample/index.res',
+    filetype = "rescript",
+    linenr   = 15,
+    key      = [[>]],
+    before   = [[<button onClick>{|}</button> ]],
+    after    = [[<button onClick>{>|}</button> ]]
   },
 }
 local run_data = {}

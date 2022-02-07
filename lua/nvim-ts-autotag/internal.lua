@@ -7,7 +7,7 @@ local log = require('nvim-ts-autotag._log')
 local M = {}
 
 M.tbl_filetypes = {
-    'html', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'svelte', 'vue', 'tsx', 'jsx',
+    'html', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'svelte', 'vue', 'tsx', 'jsx', 'rescript',
     'xml',
     'php',
     'markdown',
@@ -36,14 +36,14 @@ local HTML_TAG = {
 local JSX_TAG = {
     filetypes               = {
         'typescriptreact', 'javascriptreact', 'javascript.jsx',
-        'typescript.tsx', 'javascript', 'typescript'},
+        'typescript.tsx', 'javascript', 'typescript', 'rescript'},
 
     start_tag_pattern       = 'jsx_opening_element',
-    start_name_tag_pattern  = 'identifier|nested_identifier',
+    start_name_tag_pattern  = 'identifier|nested_identifier|jsx_identifier',
     end_tag_pattern         = "jsx_closing_element",
-    end_name_tag_pattern    = "identifier",
+    end_name_tag_pattern    = "identifier|jsx_identifier",
     close_tag_pattern       = 'jsx_closing_element',
-    close_name_tag_pattern  = 'identifier|nested_identifier',
+    close_name_tag_pattern  = 'identifier|nested_identifier|jsx_identifier',
     element_tag             = 'jsx_element',
     skip_tag_pattern        = {'jsx_closing_element','jsx_expression', 'string', 'jsx_attribute'},
 }

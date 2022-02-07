@@ -1,4 +1,15 @@
 local ts = require 'nvim-treesitter.configs'
+local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
+
+parser_config.rescript = {
+  install_info = {
+    url = "https://github.com/nkrkv/nvim-treesitter-rescript",
+    files = {"src/parser.c", "src/scanner.c"},
+    branch = "main",
+  },
+  maintainers = { "@nkrkv" },
+  filetype = "rescript",
+}
 
 local log=require('nvim-ts-autotag._log')
 
@@ -161,6 +172,33 @@ local data = {
         key      = [[ciwlala]],
         before   = [[<data></da|ta>]],
         after    = [[<lala></lala>]]
+    },
+    {
+      name     = "21 rescript rename open tag" ,
+      filepath = './sample/index.res',
+      filetype = "rescript",
+      linenr   = 12,
+      key      = [[ciwlala]],
+      before   = [[<di|v> dsadsa </div> ]],
+      after    = [[<lala|> dsadsa </lala> ]]
+    },
+    {
+      name     = "22 rescript rename open tag with attr" ,
+      filepath = './sample/index.res',
+      filetype = "rescript",
+      linenr   = 12,
+      key      = [[ciwlala]],
+      before   = [[<di|v class="lla"> dsadsa </div> ]],
+      after    = [[<lala| class="lla"> dsadsa </lala> ]]
+    },
+    {
+      name     = "23 rescript rename close tag with attr" ,
+      filepath = './sample/index.res',
+      filetype = "rescript",
+      linenr   = 12,
+      key      = [[ciwlala]],
+      before   = [[<div class="lla"> dsadsa </di|v> ]],
+      after    = [[<lala class="lla"> dsadsa </lala|> ]]
     },
     -- {
     --     only = true,
