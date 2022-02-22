@@ -400,7 +400,7 @@ local function validate_rename()
 end
 
 M.rename_tag = function ()
-    if validate_rename() then
+    if validate_rename() and parsers.has_parser() then
         parsers.get_parser():parse()
         rename_start_tag()
         rename_end_tag()
