@@ -11,7 +11,8 @@ M.tbl_filetypes = {
     'xml',
     'php',
     'markdown',
-    'glimmer','handlebars','hbs'
+    'glimmer','handlebars','hbs',
+    'htmldjango'
 }
 
 M.tbl_skipTag = {
@@ -22,7 +23,7 @@ M.tbl_skipTag = {
 local ERROR_TAG = "ERROR"
 
 local HTML_TAG = {
-    filetypes              = {'html', 'php', 'xml', 'markdown'},
+    filetypes              = {'html', 'php', 'xml', 'markdown', 'htmldjango'},
     start_tag_pattern      = 'start_tag',
     start_name_tag_pattern = 'tag_name',
     end_tag_pattern        = "end_tag",
