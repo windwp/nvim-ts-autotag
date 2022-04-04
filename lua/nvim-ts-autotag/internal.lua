@@ -394,7 +394,7 @@ local function validate_rename()
     local line   = vim.fn.getline(cursor[1])
     local char   = line:sub(cursor[2] + 1, cursor[2] + 1)
     -- only rename when last character is a word
-    if string.match(char,'%w') then
+    if string.match(char,'[%w.]') then
         return true
     end
     return false
