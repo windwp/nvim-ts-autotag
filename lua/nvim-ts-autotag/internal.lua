@@ -1,7 +1,8 @@
 local _, ts_utils = pcall(require, 'nvim-treesitter.ts_utils')
-local get_node_text = vim.treesitter.query.get_node_text
 local configs = require'nvim-treesitter.configs'
 local parsers = require'nvim-treesitter.parsers'
+local log = require('nvim-ts-autotag._log')
+-- local utils=require('nvim-ts-autotag.utils')
 
 local M = {}
 
@@ -162,8 +163,8 @@ local function find_parent_match(opts)
 
 local function get_tag_name(node)
     local tag_name = nil
-    if node ~= nil then
-        tag_name = get_node_text(node, vim.api.nvim_get_current_buf())
+    if node ~=nil then
+        tag_name = ts_utils.get_node_text(node)[1]
     end
     return tag_name
 end
@@ -284,8 +285,8 @@ end
 
 
 local function validate_tag_regex(node,start_regex,end_regex)
-    if node == nil then return false end
-    local texts = get_node_text(node, vim.api.nvim_get_current_buf())
+    if node == nil  then return false end
+    local texts = ts_utils.get_node_text(node)
     if
         string.match(texts[1],start_regex)
         and string.match(texts[#texts],end_regex)
