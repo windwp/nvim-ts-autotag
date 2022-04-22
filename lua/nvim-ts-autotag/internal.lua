@@ -1,5 +1,5 @@
 local _, ts_utils = pcall(require, 'nvim-treesitter.ts_utils')
-local get_node_text = vim.treesitter.query.get_node_text
+local get_node_text =  require('nvim-ts-autotag.utils').get_node_text
 local configs = require'nvim-treesitter.configs'
 local parsers = require'nvim-treesitter.parsers'
 
@@ -163,7 +163,7 @@ local function find_parent_match(opts)
 local function get_tag_name(node)
     local tag_name = nil
     if node ~= nil then
-        tag_name = get_node_text(node, vim.api.nvim_get_current_buf())
+        tag_name = get_node_text(node, vim.api.nvim_get_current_buf())[1]
     end
     return tag_name
 end
