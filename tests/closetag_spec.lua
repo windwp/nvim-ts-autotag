@@ -244,6 +244,15 @@ local data = {
     before   = [[<button onClick>{|}</button> ]],
     after    = [[<button onClick>{>|}</button> ]]
   },
+  {
+    name     = "24 heex div",
+    filepath = './sample/index.html.heex',
+    filetype = "heex",
+    linenr   = 9,
+    key      = [[>]],
+    before   = [[<div| ]],
+    after    = [[<div>|</div> ]]
+  }
 }
 local run_data = {}
 for _, value in pairs(data) do

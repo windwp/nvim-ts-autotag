@@ -11,7 +11,8 @@ M.tbl_filetypes = {
     'php',
     'markdown',
     'glimmer','handlebars','hbs',
-    'htmldjango'
+    'htmldjango',
+    'heex'
 }
 
 M.tbl_skipTag = {
@@ -74,10 +75,23 @@ local SVELTE_TAG = {
     skip_tag_pattern       = {'quoted_attribute_value', 'end_tag'},
 }
 
+local HEEX_TAG = {
+    filetypes              = {'heex'},
+    start_tag_pattern      = 'start_tag|start_component',
+    start_name_tag_pattern = 'tag_name|component_name',
+    end_tag_pattern        = "end_tag|end_component",
+    end_name_tag_pattern   = "tag_name|component_name",
+    close_tag_pattern      = 'erroneous_end_tag',
+    close_name_tag_pattern = 'erroneous_end_tag_name',
+    element_tag            = 'element',
+    skip_tag_pattern       = {'quoted_attribute_value', 'end_tag', 'end_component'}
+}
+
 local all_tag = {
     HBS_TAG,
     SVELTE_TAG,
-    JSX_TAG
+    JSX_TAG,
+    HEEX_TAG
 }
 M.enable_rename = true
 M.enable_close  = true
@@ -142,9 +156,9 @@ local function find_parent_match(opts)
     local skip_tag_pattern = opts.skip_tag_pattern
     assert(target ~= nil, "find parent target not nil :" .. pattern)
     local cur_depth = 0
-    local cur_node = target
     local tbl_pattern = vim.split(pattern, "|")
     for _,ptn in pairs(tbl_pattern) do
+        local cur_node = target
         while cur_node ~= nil do
             local node_type = cur_node:type()
             if is_in_table(skip_tag_pattern, node_type) then return nil end
