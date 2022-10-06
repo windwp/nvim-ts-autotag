@@ -509,7 +509,7 @@ M.attach = function(bufnr, lang)
             local row, col = unpack(vim.api.nvim_win_get_cursor(0))
             vim.api.nvim_buf_set_text(bufnr, row-1, col, row-1, col, { '>' })
             M.close_tag()
-            vim.cmd.normal'l'
+            vim.api.nvim_win_set_cursor(0, {row, col+1})
           end
         })
         end
