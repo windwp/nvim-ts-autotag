@@ -502,9 +502,16 @@ M.attach = function(bufnr, lang)
     if is_in_table(M.tbl_filetypes, vim.bo.filetype) then
         setup_ts_tag()
         if M.enable_close == true then
-            vim.cmd(
-                [[inoremap <silent> <buffer> > ><c-c>:lua require('nvim-ts-autotag.internal').close_tag()<CR>a]]
-            )
+        vim.api.nvim_buf_set_keymap(bufnr, 'i', ">", ">", {
+          noremap = true,
+          silent = true,
+          callback = function()
+            local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+            vim.api.nvim_buf_set_text(bufnr, row-1, col, row-1, col, { '>' })
+            M.close_tag()
+            vim.cmd.normal'l'
+          end
+        })
         end
         if M.enable_rename == true then
             bufnr = bufnr or vim.api.nvim_get_current_buf()
