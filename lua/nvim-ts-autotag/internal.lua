@@ -82,12 +82,16 @@ local all_tag = {
 M.enable_rename = true
 M.enable_close  = true
 
-M.setup = function (opts)
-    opts            = opts or {}
-    M.tbl_filetypes = opts.filetypes or M.tbl_filetypes
-    M.tbl_skipTag   = opts.skip_tag or M.tbl_skipTag
-    M.enable_rename = opts.enable_rename or M.enable_rename
-    M.enable_close  = opts.enable_close or M.enable_close
+M.setup = function(opts)
+	  opts = opts or {}
+	  M.tbl_filetypes = opts.filetypes or M.tbl_filetypes
+	  M.tbl_skipTag = opts.skip_tag or M.tbl_skipTag
+	  if opts.enable_rename ~= nil then
+	    	M.enable_rename = opts.enable_rename
+	  end
+	  if opts.enable_close ~= nil then
+	    	M.enable_close = opts.enable_close
+	  end
 end
 
 local function is_in_table(tbl, val)
