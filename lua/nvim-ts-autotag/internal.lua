@@ -6,12 +6,24 @@ local parsers = require'nvim-treesitter.parsers'
 local M = {}
 
 M.tbl_filetypes = {
-    'html', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'svelte', 'vue', 'tsx', 'jsx', 'rescript',
-    'xml',
-    'php',
+	'astro',
+	'handlebars',
+	'hbs',
+	'javascript',
+	'javascriptreact',
+	'jsx',
+	'rescript',
+	'svelte',
+	'tsx',
+	'typescript',
+	'typescriptreact',
+	'vue',
+    'glimmer',
+    'html',
+    'htmldjango',
     'markdown',
-    'glimmer','handlebars','hbs',
-    'htmldjango'
+    'php',
+    'xml',
 }
 
 M.tbl_skipTag = {
@@ -22,7 +34,14 @@ M.tbl_skipTag = {
 local ERROR_TAG = "ERROR"
 
 local HTML_TAG = {
-    filetypes              = {'html', 'php', 'xml', 'markdown', 'htmldjango'},
+    filetypes              = {
+		'astro',
+		'html',
+		'htmldjango',
+		'markdown',
+		'php',
+		'xml',
+	},
     start_tag_pattern      = 'start_tag',
     start_name_tag_pattern = 'tag_name',
     end_tag_pattern        = "end_tag",
