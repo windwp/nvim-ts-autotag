@@ -1,10 +1,12 @@
 # nvim-ts-autotag
 
-Use treesitter to **autoclose** and **autorename** html tag
+Uses the treesitter incremental parser to intelligently **autoclose** and **autorename** html tags as you edit.
 
-It work with html,tsx,vue,svelte,php,rescript.
+It works with html,tsx,vue,svelte,php,rescript.
 
 ## Usage
+
+Tags are automatically paired as you type in insert mode, and if you renamed one tag its matching pair will update when you exit insert mode.
 
 ``` text
 Before        Input         After
@@ -16,9 +18,11 @@ Before        Input         After
 
 
 ## Setup
-Neovim 0.5 and nvim-treesitter to work
 
-User treesitter setup
+This plugin requires Neovim 0.5 or greater and [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) to work
+
+Configure in your treesitter setup:
+
 ```lua
 require'nvim-treesitter.configs'.setup {
   autotag = {
@@ -27,11 +31,17 @@ require'nvim-treesitter.configs'.setup {
 }
 
 ```
-or you can use a set up function
+or you can use a set up function:
 
 ``` lua
 require('nvim-ts-autotag').setup()
 
+```
+
+And make sure you have the html treesitter installed:
+
+```
+  :TSInstall html
 ```
 
 ### Enable update on insert
