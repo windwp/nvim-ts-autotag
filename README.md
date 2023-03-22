@@ -16,7 +16,7 @@ Before        Input         After
 
 
 ## Setup
-Neovim 0.5 and nvim-treesitter to work
+Neovim 0.7 and nvim-treesitter to work
 
 User treesitter setup
 ```lua
@@ -85,3 +85,8 @@ require('nvim-ts-autotag').setup({
 })
 
 ```
+
+## Sponsor
+If you find this plugin useful, please consider sponsoring the project.
+
+[Sponsor](https://paypal.me/trieule1vn)
