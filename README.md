@@ -2,7 +2,22 @@
 
 Use treesitter to **autoclose** and **autorename** html tag
 
-It work with html,tsx,vue,svelte,php,rescript.
+It works with:
+
+- astro
+- glimmer
+- handlebars
+- html
+- javascript
+- jsx
+- markdown
+- php
+- rescript
+- svelte
+- tsx
+- typescript
+- vue
+- xml
 
 ## Usage
 
@@ -60,7 +75,7 @@ local filetypes = {
     'xml',
     'php',
     'markdown',
-    'glimmer','handlebars','hbs'
+    'astro', 'glimmer', 'handlebars', 'hbs'
 }
 local skip_tags = {
   'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'slot',
