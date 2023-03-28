@@ -1,6 +1,6 @@
 local _, ts_utils = pcall(require, 'nvim-treesitter.ts_utils')
 local log = require('nvim-ts-autotag._log')
-local get_node_text = vim.treesitter.query.get_node_text or ts_utils.get_node_text
+local get_node_text = vim.treesitter.get_node_text or ts_utils.get_node_text
 local M = {}
 
 M.get_node_text = function(node)
