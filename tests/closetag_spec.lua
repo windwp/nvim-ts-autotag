@@ -194,6 +194,16 @@ local data = {
     --     before = [[<div| ]],
     --     after = [[<div>|</div> ]],
     -- },
+    {
+
+        name = '19 lit template div',
+        filepath = './sample/index.ts',
+        filetype = 'typescript',
+        linenr = 3,
+        key = [[>]],
+        before = [[<div| ]],
+        after = [[<div>|</div> ]],
+    },
 }
 
 local autotag = require('nvim-ts-autotag')
