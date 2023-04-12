@@ -330,10 +330,12 @@ M.close_tag = function()
     buf_parser:parse()
     local result, tag_name = check_close_tag()
     if result == true and tag_name ~= nil then
-        vim.cmd(string.format([[normal! a</%s>]], tag_name))
-        vim.cmd([[normal! F>]])
-    end
+       vim.api.nvim_put({string.format("</%s>", tag_name)}, "", true, false)
+       vim.cmd([[normal! F>]])
+   end
 end
+
+
 
 local function replace_text_node(node, tag_name)
     if node == nil then
