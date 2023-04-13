@@ -12,7 +12,7 @@ M.tbl_filetypes = {
     'xml',
     'php',
     'markdown',
-    'glimmer', 'handlebars', 'hbs',
+    'astro', 'glimmer', 'handlebars', 'hbs',
     'htmldjango'
 }
 
@@ -26,7 +26,14 @@ local ERROR_TAG = 'ERROR'
 
 -- stylua: ignore
 local HTML_TAG = {
-    filetypes              = { 'html', 'php', 'xml', 'markdown', 'htmldjango' },
+    filetypes              = {
+		'astro',
+		'html',
+		'htmldjango',
+		'markdown',
+		'php',
+		'xml',
+	},
     start_tag_pattern      = 'start_tag',
     start_name_tag_pattern = 'tag_name',
     end_tag_pattern        = "end_tag",
