@@ -27,13 +27,13 @@ local ERROR_TAG = 'ERROR'
 -- stylua: ignore
 local HTML_TAG = {
     filetypes              = {
-		'astro',
-		'html',
-		'htmldjango',
-		'markdown',
-		'php',
-		'xml',
-	},
+        'astro',
+        'html',
+        'htmldjango',
+        'markdown',
+        'php',
+        'xml',
+    },
     start_tag_pattern      = 'start_tag',
     start_name_tag_pattern = 'tag_name',
     end_tag_pattern        = "end_tag",
@@ -137,34 +137,34 @@ local setup_ts_tag = function()
 end
 
 local function is_in_template_tag()
-  local cursor_node = ts_utils.get_node_at_cursor()
-  if not cursor_node then
-    return false
-  end
-
-  local has_element = false
-  local has_template_string = false
-
-  local current_node = cursor_node
-  while not (has_element and has_template_string) and current_node do
-    if not has_element and current_node:type() == 'element' then
-      has_element = true
+    local cursor_node = ts_utils.get_node_at_cursor()
+    if not cursor_node then
+        return false
     end
-    if not has_template_string and current_node:type() == 'template_string' then
-      has_template_string = true
-    end
-    current_node = current_node:parent()
-  end
 
-  return has_element and has_template_string
+    local has_element = false
+    local has_template_string = false
+
+    local current_node = cursor_node
+    while not (has_element and has_template_string) and current_node do
+        if not has_element and current_node:type() == 'element' then
+            has_element = true
+        end
+        if not has_template_string and current_node:type() == 'template_string' then
+            has_template_string = true
+        end
+        current_node = current_node:parent()
+    end
+
+    return has_element and has_template_string
 end
 
 local function get_ts_tag()
-  if is_in_template_tag() then
-    return HTML_TAG
-  else
-    return buffer_tag[vim.api.nvim_get_current_buf()]
-  end
+    if is_in_template_tag() then
+        return HTML_TAG
+    else
+        return buffer_tag[vim.api.nvim_get_current_buf()]
+    end
 end
 
 local function find_child_match(opts)
@@ -337,9 +337,9 @@ M.close_tag = function()
     buf_parser:parse()
     local result, tag_name = check_close_tag()
     if result == true and tag_name ~= nil then
-       vim.api.nvim_put({string.format("</%s>", tag_name)}, "", true, false)
-       vim.cmd([[normal! F>]])
-   end
+        vim.api.nvim_put({ string.format("</%s>", tag_name) }, "", true, false)
+        vim.cmd([[normal! F>]])
+    end
 end
 
 
@@ -523,7 +523,7 @@ local function validate_rename()
     return false
 end
 
-M.rename_tag = function ()
+M.rename_tag = function()
     if validate_rename() and parsers.has_parser() then
         parsers.get_parser():parse()
         rename_start_tag()
@@ -538,22 +538,22 @@ M.attach = function(bufnr, lang)
     if is_in_table(M.tbl_filetypes, vim.bo.filetype) then
         setup_ts_tag()
         if M.enable_close == true then
-        vim.api.nvim_buf_set_keymap(bufnr or 0, 'i', ">", ">", {
-          noremap = true,
-          silent = true,
-          callback = function()
-            local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-            vim.api.nvim_buf_set_text(bufnr or 0, row-1, col, row-1, col, { '>' })
-            M.close_tag()
-            vim.api.nvim_win_set_cursor(0, {row, col+1})
-          end
-        })
+            vim.api.nvim_buf_set_keymap(bufnr or 0, 'i', ">", ">", {
+                noremap = true,
+                silent = true,
+                callback = function()
+                    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+                    vim.api.nvim_buf_set_text(bufnr or 0, row - 1, col, row - 1, col, { '>' })
+                    M.close_tag()
+                    vim.api.nvim_win_set_cursor(0, { row, col + 1 })
+                end
+            })
         end
         if M.enable_rename == true then
             bufnr = bufnr or vim.api.nvim_get_current_buf()
             vim.api.nvim_create_autocmd('InsertLeave', {
-              buffer = bufnr,
-              callback = M.rename_tag
+                buffer = bufnr,
+                callback = M.rename_tag
             })
         end
     end
