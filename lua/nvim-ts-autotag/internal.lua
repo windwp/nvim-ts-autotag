@@ -552,11 +552,8 @@ M.attach = function(bufnr, lang)
         if M.enable_rename == true then
             bufnr = bufnr or vim.api.nvim_get_current_buf()
             vim.api.nvim_create_autocmd('InsertLeave', {
-              group = vim.api.nvim_create_augroup('ts-autotag-rename', { clear = true }),
               buffer = bufnr,
-              callback = function()
-                M.rename_tag()
-              end
+              callback = M.rename_tag
             })
         end
     end
