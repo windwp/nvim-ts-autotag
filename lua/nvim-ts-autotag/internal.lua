@@ -13,7 +13,8 @@ M.tbl_filetypes = {
     'php',
     'markdown',
     'astro', 'glimmer', 'handlebars', 'hbs',
-    'htmldjango'
+    'htmldjango',
+    'eruby'
 }
 
 -- stylua: ignore
