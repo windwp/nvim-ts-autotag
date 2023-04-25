@@ -546,6 +546,10 @@ M.attach = function(bufnr, lang)
                     vim.api.nvim_buf_set_text(bufnr or 0, row - 1, col, row - 1, col, { '>' })
                     M.close_tag()
                     vim.api.nvim_win_set_cursor(0, { row, col + 1 })
+                    local has_luasnip, luasnip = pcall(require, 'luasnip')
+                    if has_luasnip then
+                        luasnip.expand_auto()
+                    end
                 end
             })
         end
