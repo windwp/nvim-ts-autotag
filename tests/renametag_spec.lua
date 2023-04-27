@@ -257,7 +257,77 @@ local data = {
             '  </div>',
             '</div>',
         },
-    }
+    },
+    {
+        name = 'eruby rename open tag',
+        filepath = './sample/index.html.erb',
+        filetype = 'eruby',
+        linenr = 10,
+        key = [[ciwlala]],
+        before = [[<di|v> dsadsa </div> ]],
+        after = [[<lala|> dsadsa </lala> ]],
+    },
+    {
+        name = 'eruby rename open tag with attr',
+        filepath = './sample/index.html.erb',
+        filetype = 'eruby',
+        linenr = 10,
+        key = [[ciwlala]],
+        before = [[<di|v class="lla"> dsadsa </div> ]],
+        after = [[<lala| class="lla"> dsadsa </lala|> ]],
+    },
+    {
+        name = 'eruby rename close tag with attr',
+        filepath = './sample/index.html.erb',
+        filetype = 'eruby',
+        linenr = 10,
+        key = [[ciwlala]],
+        before = [[<div class="lla"> dsadsa </di|v> ]],
+        after = [[<lala class="lla"> dsadsa </lal|a> ]],
+    },
+    {
+        name = 'eruby not rename close tag on char <',
+        filepath = './sample/index.html.erb',
+        filetype = 'eruby',
+        linenr = 10,
+        key = [[i<]],
+        before = [[<div class="lla"> dsadsa |/button> ]],
+        after = [[<div class="lla"> dsadsa <|/button> ]],
+    },
+    {
+        name = 'eruby not rename close tag with not valid',
+        filepath = './sample/index.html.erb',
+        filetype = 'eruby',
+        linenr = 12,
+        key = [[ciwlala]],
+        before = {
+            [[<di|v class="lla" ]],
+            [[ dsadsa </div>]],
+        },
+        after = [[<lala class="lla" ]],
+    },
+    {
+        name = 'eruby not rename close tag with not valid',
+        filepath = './sample/index.html.erb',
+        filetype = 'eruby',
+        linenr = 12,
+        key = [[ciwlala]],
+        before = {
+            [[<div class="lla" </d|iv>]],
+        },
+        after = [[<div class="lla" </lala|>]],
+    },
+    {
+        name = 'eruby not rename tag-like ruby string',
+        filepath = './sample/index.html.erb',
+        filetype = 'eruby',
+        linenr = 12,
+        key = [[ciwlala]],
+        before = {
+            [[<%= <div></d|iv> %>]],
+        },
+        after = [[<%= <div></lala|> %>]],
+    },
 }
 
 local autotag = require('nvim-ts-autotag')

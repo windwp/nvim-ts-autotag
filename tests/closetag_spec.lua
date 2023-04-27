@@ -195,7 +195,6 @@ local data = {
     --     after = [[<div>|</div> ]],
     -- },
     {
-
         name = '19 lit template div',
         filepath = './sample/index.ts',
         filetype = 'typescript',
@@ -203,6 +202,24 @@ local data = {
         key = [[>]],
         before = [[<div| ]],
         after = [[<div>|</div> ]],
+    },
+    {
+        name = '20 eruby template div',
+        filepath = './sample/index.html.erb',
+        filetype = 'eruby',
+        linenr = 10,
+        key = [[>]],
+        before = [[<div| ]],
+        after = [[<div>|</div> ]],
+    },
+    {
+        name = '20 eruby template ruby string',
+        filepath = './sample/index.html.erb',
+        filetype = 'eruby',
+        linenr = 10,
+        key = [[>]],
+        before = [[<%= <div| %>]],
+        after = [[<%= <div>| %> ]],
     },
 }
 

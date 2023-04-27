@@ -1,13 +1,15 @@
 set rtp +=.
 set rtp +=../plenary.nvim/
-set rtp +=../nvim-treesitter
+set rtp +=../nvim-treesitter/
 set rtp +=../playground/
+set rtp +=../nvim-treesitter-rescript/
+
 
 
 runtime! plugin/plenary.vim
-runtime! plugin/nvim-treesitter.vim
-runtime! plugin/playground.vim
-runtime! plugin/nvim-treesitter-rescript
+runtime! plugin/nvim-treesitter.lua
+runtime! plugin/nvim-treesitter-playground.lua
+runtime! plugin/nvim-treesitter-rescript.vim
 
 
 set noswapfile
@@ -27,7 +29,7 @@ _G.__is_log=true
 _G.test_rename = true
 _G.test_close = true
 _G.ts_filetypes = {
-  'html', 'javascript', 'typescript', 'svelte', 'vue', 'tsx', 'php', 'glimmer', 'rescript'
+  'html', 'javascript', 'typescript', 'svelte', 'vue', 'tsx', 'php', 'glimmer', 'rescript', 'embedded_template'
 }
 require("plenary/busted")
 vim.cmd[[luafile ./tests/test-utils.lua]]
