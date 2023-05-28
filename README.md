@@ -67,6 +67,18 @@ vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
     }
 )
 ```
+
+### Enable React Typescript support
+
+If you have that issue
+[#112](https://github.com/windwp/nvim-ts-autotag/issues/112)
+
+Install **tsx** support via
+
+```
+:TSInstall tsx
+```
+
 ## Default values
 
 ``` lua
