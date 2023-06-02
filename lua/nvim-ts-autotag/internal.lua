@@ -4,7 +4,11 @@ if (not status1) then
     return
 end
 
-local parsers = require('nvim-treesitter.parsers')
+local status2, parsers = pcall(require, 'nvim-treesitter.parsers')
+if (not status2) then
+    return
+end
+
 local log = require('nvim-ts-autotag._log')
 local utils = require('nvim-ts-autotag.utils')
 
