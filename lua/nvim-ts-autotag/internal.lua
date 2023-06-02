@@ -1,5 +1,9 @@
 local _, ts_utils = pcall(require, 'nvim-treesitter.ts_utils')
-local configs = require('nvim-treesitter.configs')
+local status1, configs = pcall(require, 'nvim-treesitter.configs')
+if (not status1) then
+    return
+end
+
 local parsers = require('nvim-treesitter.parsers')
 local log = require('nvim-ts-autotag._log')
 local utils = require('nvim-ts-autotag.utils')
