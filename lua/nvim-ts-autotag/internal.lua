@@ -99,6 +99,7 @@ local all_tag = {
 }
 M.enable_rename = true
 M.enable_close = true
+M.enable_close_on_slash = true
 
 M.setup = function(opts)
     opts = opts or {}
@@ -288,12 +289,58 @@ local function find_child_tag_node(opt)
     return find_tag_node(opt)
 end
 
-local function check_close_tag()
+local function find_start_tag(current)
+    local ts_tag = get_ts_tag()
+    if not ts_tag then
+        return nil
+    end
+
+    if current:type() ~= 'ERROR' then
+        return nil
+    end
+
+    local parent = current:parent()
+
+    for node in parent:iter_children() do
+        local node_type = node:type()
+
+        local tbl_pattern = vim.split(ts_tag.start_tag_pattern, '|')
+        for _, ptn in pairs(tbl_pattern) do
+            if node_type == ptn then
+                return node
+            end
+        end
+    end
+
+    for node in current:iter_children() do
+        local node_type = node:type()
+
+        local tbl_pattern = vim.split(ts_tag.start_tag_pattern, '|')
+        for _, ptn in pairs(tbl_pattern) do
+            if node_type == ptn then
+                return node
+            end
+        end
+    end
+end
+
+local function check_close_tag(close_slash_tag)
     local ts_tag = get_ts_tag()
     if not ts_tag then
         return false
     end
+
+    local target = nil
+
+    if close_slash_tag then
+        -- Find start node from non closed tag
+        local current = ts_utils.get_node_at_cursor()
+
+        target = find_start_tag(current)
+    end
+
     local tag_node = find_tag_node({
+        target = target,
         tag_pattern = ts_tag.start_tag_pattern,
         name_tag_pattern = ts_tag.start_name_tag_pattern,
         skip_tag_pattern = ts_tag.skip_tag_pattern,
@@ -343,7 +390,18 @@ M.close_tag = function()
     end
 end
 
-
+M.close_slash_tag = function()
+    local buf_parser = parsers.get_parser()
+    if not buf_parser then
+        return
+    end
+    buf_parser:parse()
+    local result, tag_name = check_close_tag(true)
+    if result == true and tag_name ~= nil then
+        vim.api.nvim_put({ string.format("%s>", tag_name) }, "", true, true)
+        vim.cmd([[normal! F>]])
+    end
+end
 
 local function replace_text_node(node, tag_name)
     if node == nil then
@@ -548,6 +606,19 @@ M.attach = function(bufnr, lang)
                     M.close_tag()
                     vim.api.nvim_win_set_cursor(0, { row, col + 1 })
                 end
+            })
+        end
+        if M.enable_close_on_slash == true then
+            vim.api.nvim_buf_set_keymap(bufnr or 0, 'i', "/", "/", {
+                noremap = true,
+                silent = true,
+                callback = function()
+                    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+                    vim.api.nvim_buf_set_text(bufnr or 0, row - 1, col, row - 1, col, { '/' })
+                    M.close_slash_tag()
+                    local new_row, new_col = unpack(vim.api.nvim_win_get_cursor(0))
+                    vim.api.nvim_win_set_cursor(0, { new_row, new_col + 1 })
+                end,
             })
         end
         if M.enable_rename == true then
