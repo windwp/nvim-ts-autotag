@@ -105,8 +105,15 @@ M.setup = function(opts)
     opts = opts or {}
     M.tbl_filetypes = opts.filetypes or M.tbl_filetypes
     M.tbl_skipTag = opts.skip_tag or M.tbl_skipTag
-    M.enable_rename = opts.enable_rename or M.enable_rename
-    M.enable_close = opts.enable_close or M.enable_close
+    if opts.enable_rename ~= nil then
+        M.enable_rename = opts.enable_rename
+    end
+    if opts.enable_close then
+        M.enable_close = opts.enable_close
+    end
+    if opts.enable_close_on_slash ~= nil then
+        M.enable_close_on_slash = opts.enable_close_on_slash
+    end
 end
 
 local function is_in_table(tbl, val)
@@ -576,6 +583,7 @@ M.attach = function(bufnr, lang)
     M.lang = lang
     local config = configs.get_module("autotag")
     M.setup(config)
+
     if is_in_table(M.tbl_filetypes, vim.bo.filetype) then
         setup_ts_tag()
         if M.enable_close == true then
