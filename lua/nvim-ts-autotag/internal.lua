@@ -571,8 +571,28 @@ local function validate_rename()
     return false
 end
 
+local function validate_rename_normal()
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    local line = vim.api.nvim_get_current_line()
+    local char = line:sub(cursor[2] + 1, cursor[2] + 1)
+    local prev_char = line:sub(cursor[2], cursor[2])
+    -- only rename when last character is a word or end of tag
+    if string.match(char, "%w") or string.match(prev_char, "%w") then
+        return true
+    end
+    return false
+end
+
 M.rename_tag = function()
     if validate_rename() and parsers.has_parser() then
+        parsers.get_parser():parse()
+        rename_start_tag()
+        rename_end_tag()
+    end
+end
+
+M.rename_tag_normal = function()
+    if validate_rename_normal() and parsers.has_parser() then
         parsers.get_parser():parse()
         rename_start_tag()
         rename_end_tag()
@@ -616,6 +636,10 @@ M.attach = function(bufnr, lang)
             vim.api.nvim_create_autocmd("InsertLeave", {
                 buffer = bufnr,
                 callback = M.rename_tag,
+            })
+            vim.api.nvim_create_autocmd("TextChanged", {
+                buffer = bufnr,
+                callback = M.rename_tag_normal,
             })
         end
     end
