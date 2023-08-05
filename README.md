@@ -30,8 +30,25 @@ Before        Input         After
 ```
 
 
-## Setup
+## Getting started
 Neovim 0.7 and nvim-treesitter to work
+
+### Installation 
+
+Use your preffered plugin manager. Here's an example with [lazy.nvim](https://github.com/folke/lazy.nvim):
+
+```lua
+require('lazy').setup {
+  {
+    'nvim-treesitter/nvim-treesitter',
+    dependencies = {
+      'windwp/nvim-ts-autotag',
+    },
+  },
+}
+```
+
+### Setup
 
 User treesitter setup
 ```lua
