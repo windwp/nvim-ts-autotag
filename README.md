@@ -67,6 +67,15 @@ vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
     }
 )
 ```
+
+### Enable Treesitter in XML files
+
+nvim-treesitter [doesn't have an XML parser](https://github.com/nvim-treesitter/nvim-treesitter/issues/3295). Instead you can configure treesitter to use the HTML parser, which isn't perfect but works fine.
+```lua
+-- Use the HTML parser for XML files
+vim.treesitter.language.register("html", "xml")
+```
+
 ## Default values
 
 ``` lua
