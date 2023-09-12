@@ -285,6 +285,12 @@ local function find_tag_node(opt)
     if is_in_table(tbl_name_pattern, node:type()) then
         return node
     end
+
+    -- check current node is jsx fragment
+    if get_tag_name(node) == "</>" then
+        return node
+    end
+
     return name_node
 end
 
@@ -484,6 +490,12 @@ local function rename_start_tag()
             target = tag_node,
             pattern = ERROR_TAG,
         })
+
+        -- In recent version of treesitter jsx fragment don't use error tag
+        if get_tag_name(close_tag_node) == "</>" then
+            error_node = close_tag_node
+        end
+
         if error_node == nil then
             log.debug("do replace")
             local close_tag_name = get_tag_name(close_tag_node)
