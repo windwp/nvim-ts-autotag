@@ -67,7 +67,7 @@ local JSX_TAG = {
 
 -- stylua: ignore
 local HBS_TAG = {
-    filetypes              = { 'glimmer', 'handlebars', 'hbs', 'htmldjango' },
+    filetypes              = { 'glimmer', 'handlebars', 'hbs' },
     start_tag_pattern      = 'element_node_start',
     start_name_tag_pattern = 'tag_name',
     end_tag_pattern        = 'element_node_end',
