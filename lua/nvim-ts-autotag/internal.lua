@@ -400,7 +400,17 @@ M.close_slash_tag = function()
     buf_parser:parse()
     local result, tag_name = check_close_tag(true)
     if result == true and tag_name ~= nil then
-        vim.api.nvim_put({ string.format("%s>", tag_name) }, "", true, true)
+        local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+
+        local previous_character = vim.api.nvim_buf_get_text(0, row - 1, col - 1, row - 1, col, {})[1]
+
+        -- just close tag if it's an autoclose tag
+        if previous_character == "<" then
+            vim.api.nvim_put({ string.format("%s>", tag_name) }, "", true, true)
+        else
+            vim.api.nvim_put({ ">" }, "", true, true)
+        end
+
         vim.cmd([[normal! F>]])
     end
 end

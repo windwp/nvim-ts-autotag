@@ -183,6 +183,24 @@ local data = {
         before = [[<%= <div| %>]],
         after = [[<%= <div/| %> ]],
     },
+    {
+        name = '19 typescriptreact self closing tag close after inputting /',
+        filepath = './sample/index.tsx',
+        filetype = 'typescriptreact',
+        linenr = 12,
+        key = [[/]],
+        before = [[<div| ]],
+        after = [[<div/>| ]],
+    },
+    {
+        name = '20 typescriptreact self closing tag with attribute close after inputting /',
+        filepath = './sample/index.tsx',
+        filetype = 'typescriptreact',
+        linenr = 12,
+        key = [[/]],
+        before = [[<Img src="abc"| ]],
+        after = [[<Img src="abc"/>| ]],
+    },
 }
 
 local autotag = require('nvim-ts-autotag')
