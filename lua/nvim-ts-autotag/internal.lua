@@ -51,11 +51,11 @@ local JSX_TAG = {
         'typescript.tsx', 'javascript', 'typescript', 'rescript'
     },
     start_tag_pattern      = 'jsx_opening_element|start_tag',
-    start_name_tag_pattern = 'identifier|nested_identifier|tag_name|jsx_identifier',
+    start_name_tag_pattern = 'identifier|nested_identifier|tag_name|jsx_identifier|member_expression',
     end_tag_pattern        = 'jsx_closing_element|end_tag',
     end_name_tag_pattern   = 'identifier|tag_name',
     close_tag_pattern      = 'jsx_closing_element|nested_identifier|jsx_identifier|erroneous_end_tag|end_tag',
-    close_name_tag_pattern = 'identifier|nested_identifier|jsx_identifier|erroneous_end_tag_name|tag_name',
+    close_name_tag_pattern = 'identifier|nested_identifier|jsx_identifier|erroneous_end_tag_name|tag_name|member_expression',
     element_tag            = 'jsx_element|element',
     skip_tag_pattern       = {
         'jsx_closing_element', 'jsx_expression', 'string', 'jsx_attribute', 'end_tag',
@@ -299,7 +299,7 @@ local function find_start_tag(current)
         return nil
     end
 
-    if current:type() ~= "ERROR" then
+    if current:type() == "regex" or current:type() == "element" then
         return nil
     end
 
