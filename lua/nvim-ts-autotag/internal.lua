@@ -305,6 +305,10 @@ local function find_start_tag(current)
         return nil
     end
 
+    if not current then
+        return nil
+    end
+
     if current:type() == "regex" or current:type() == "element" then
         return nil
     end

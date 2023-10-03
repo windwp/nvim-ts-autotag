@@ -201,6 +201,15 @@ local data = {
         before = [[<Img src="abc"| ]],
         after = [[<Img src="abc"/>| ]],
     },
+    {
+        name = '21 typescriptreact regex should do nothing after inputting final /',
+        filepath = './sample/index.tsx',
+        filetype = 'typescriptreact',
+        linenr = 7,
+        key = [[/]],
+        before = [[const regex = /hoi| ]],
+        after = [[const regex = /hoi/| ]],
+    },
 }
 
 local autotag = require('nvim-ts-autotag')
