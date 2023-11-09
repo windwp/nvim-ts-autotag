@@ -108,7 +108,7 @@ M.setup = function(opts)
     if opts.enable_rename ~= nil then
         M.enable_rename = opts.enable_rename
     end
-    if opts.enable_close then
+    if opts.enable_close ~= nil then
         M.enable_close = opts.enable_close
     end
     if opts.enable_close_on_slash ~= nil then
