@@ -8,13 +8,27 @@ local M = {}
 
 -- stylua: ignore
 M.tbl_filetypes = {
-    'html', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'svelte', 'vue', 'tsx', 'jsx', 'rescript',
+    'html', 
+    'javascript', 
+    'typescript', 
+    'javascriptreact', 
+    'typescriptreact', 'svelte', 
+    'vue', 
+    'tsx', 
+    'jsx', 
+    'rescript',
     'xml',
     'php',
     'markdown',
-    'astro', 'glimmer', 'handlebars', 'hbs',
+    'astro', 
+    'glimmer', 
+    'handlebars', 
+    'hbs',
     'htmldjango',
-    'eruby'
+    'eruby',
+    'templ',
+    'jinja',
+    'gotempl'
 }
 
 -- stylua: ignore
