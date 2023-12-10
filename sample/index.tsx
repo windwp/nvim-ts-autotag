@@ -16,9 +16,6 @@ const SamplePage: React.FC = () => {
 
 
 
-
-
-
     </div>
   )
 }

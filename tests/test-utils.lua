@@ -1,5 +1,4 @@
 local utils = require('nvim-ts-autotag.utils')
-local _, ts_utils = pcall(require, 'nvim-treesitter.ts_utils')
 local log = require('nvim-ts-autotag._log')
 local api = vim.api
 
@@ -59,8 +58,7 @@ local compare_text = function(linenr, text_after, name, cursor_add, end_cursor)
     )
     for i = 1, #text_after, 1 do
         local t = string.gsub(text_after[i], '%|', '')
-        if
-            t
+        if t
             and new_text[i]
             and t:gsub('%s+$', '') ~= new_text[i]:gsub('%s+$', '')
         then
@@ -175,16 +173,16 @@ _G.Test_withfile = function(test_data, cb)
 end
 
 _G.dump_node = function(node)
-    local text = ts_utils.get_node_text(node)
+    local text = utils.get_node_text(node)
     for _, txt in pairs(text) do
-        print(txt)
+        log.debug(txt)
     end
 end
 
 _G.dump_node_text = function(target)
     for node in target:iter_children() do
         local node_type = node:type()
-        local text = ts_utils.get_node_text(node)
+        local text = utils.get_node_text(node)
         log.debug('type:' .. node_type .. ' ')
         log.debug(text)
     end

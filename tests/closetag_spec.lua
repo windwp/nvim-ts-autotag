@@ -1,24 +1,8 @@
-if not _G.test_close then
-    return
-end
-
 local ts = require('nvim-treesitter.configs')
-local helpers = {}
 ts.setup({
     ensure_installed = _G.ts_filetypes,
     highlight = { enable = true },
 })
-local eq = assert.are.same
-
-function helpers.feed(text, feed_opts)
-    feed_opts = feed_opts or 'n'
-    local to_feed = vim.api.nvim_replace_termcodes(text, true, false, true)
-    vim.api.nvim_feedkeys(to_feed, feed_opts, true)
-end
-
-function helpers.insert(text)
-    helpers.feed('a' .. text, 'x')
-end
 
 local data = {
     {

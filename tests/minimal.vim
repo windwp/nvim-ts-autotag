@@ -26,13 +26,16 @@ set foldlevel=9999
 
 lua << EOF
 _G.__is_log=true
-_G.test_rename = true
-_G.test_close = true
 _G.ts_filetypes = {
   'html', 'javascript', 'typescript', 'svelte', 'vue', 'tsx', 'php', 'glimmer', 'rescript', 'embedded_template'
 }
 require("plenary/busted")
 vim.cmd[[luafile ./tests/test-utils.lua]]
-require("nvim-ts-autotag").setup()
+require("nvim-ts-autotag").setup({
+    enable = true,
+    enable_rename = true,
+    enable_close = true,
+    enable_close_on_slash = true,
+})
 EOF
 
