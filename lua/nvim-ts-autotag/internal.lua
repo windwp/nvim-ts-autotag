@@ -8,10 +8,10 @@ local M = {}
 
 -- stylua: ignore
 M.tbl_filetypes = {
-    'html', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'svelte', 'vue', 'tsx', 'jsx', 'rescript','templ',
+    'html', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'svelte', 'vue', 'tsx', 'jsx', 'rescript',
     'xml',
     'php',
-    'markdown',
+    'markdown','templ',
     'astro', 'glimmer', 'handlebars', 'hbs',
     'htmldjango',
     'eruby'
@@ -32,6 +32,7 @@ local HTML_TAG = {
         'markdown',
         'php',
         'xml',
+        'templ',
     },
     start_tag_pattern      = { 'start_tag' },
     start_name_tag_pattern = { 'tag_name' },
@@ -46,7 +47,7 @@ local HTML_TAG = {
 local JSX_TAG = {
     filetypes              = {
         'typescriptreact', 'javascriptreact', 'javascript.jsx',
-        'typescript.tsx', 'javascript', 'typescript', 'rescript', 'templ',
+        'typescript.tsx', 'javascript', 'typescript', 'rescript',
     },
     start_tag_pattern      = { 'jsx_opening_element', 'start_tag' },
     start_name_tag_pattern = { 'identifier', 'nested_identifier', 'tag_name', 'member_expression', 'jsx_identifier' },
