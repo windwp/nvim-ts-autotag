@@ -11,10 +11,11 @@ M.tbl_filetypes = {
     'html', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'svelte', 'vue', 'tsx', 'jsx', 'rescript',
     'xml',
     'php',
-    'markdown','templ',
+    'markdown',
     'astro', 'glimmer', 'handlebars', 'hbs',
     'htmldjango',
-    'eruby'
+    'eruby',
+    'templ',
 }
 
 -- stylua: ignore
@@ -32,7 +33,6 @@ local HTML_TAG = {
         'markdown',
         'php',
         'xml',
-        'templ',
     },
     start_tag_pattern      = { 'start_tag' },
     start_name_tag_pattern = { 'tag_name' },
@@ -91,10 +91,25 @@ local SVELTE_TAG = {
     skip_tag_pattern       = { 'quoted_attribute_value', 'end_tag' },
 }
 
+local TEMPL_TAG = {
+    filetypes = {
+        "templ",
+    },
+    start_tag_pattern = { "tag_start" },
+    start_name_tag_pattern = { "element_identifier" },
+    end_tag_pattern = { "tag_end" },
+    end_name_tag_pattern = { "element_identifier" },
+    close_tag_pattern = { "erroneous_end_tag" },
+    close_name_tag_pattern = { "erroneous_end_tag_name" },
+    element_tag = { "element" },
+    skip_tag_pattern = { "quoted_attribute_value", "tag_end" },
+}
+
 local all_tag = {
     HBS_TAG,
     SVELTE_TAG,
     JSX_TAG,
+    TEMPL_TAG,
 }
 M.enable_rename = true
 M.enable_close = true
