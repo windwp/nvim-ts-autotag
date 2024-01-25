@@ -594,8 +594,8 @@ M.attach = function(bufnr, lang)
     end
 end
 
-M.detach = function()
-    local bufnr = vim.api.nvim_get_current_buf()
+M.detach = function(bufnr)
+    local bufnr = tonumber(bufnr) or vim.api.nvim_get_current_buf()
     buffer_tag[bufnr] = nil
 end
 
