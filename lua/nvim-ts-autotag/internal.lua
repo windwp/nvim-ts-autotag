@@ -14,7 +14,8 @@ M.tbl_filetypes = {
     'markdown',
     'astro', 'glimmer', 'handlebars', 'hbs',
     'htmldjango',
-    'eruby'
+    'eruby',
+    'templ',
 }
 
 -- stylua: ignore
@@ -90,10 +91,25 @@ local SVELTE_TAG = {
     skip_tag_pattern       = { 'quoted_attribute_value', 'end_tag' },
 }
 
+local TEMPL_TAG = {
+    filetypes = {
+        "templ",
+    },
+    start_tag_pattern = { "tag_start" },
+    start_name_tag_pattern = { "element_identifier" },
+    end_tag_pattern = { "tag_end" },
+    end_name_tag_pattern = { "element_identifier" },
+    close_tag_pattern = { "erroneous_end_tag" },
+    close_name_tag_pattern = { "erroneous_end_tag_name" },
+    element_tag = { "element" },
+    skip_tag_pattern = { "quoted_attribute_value", "tag_end" },
+}
+
 local all_tag = {
     HBS_TAG,
     SVELTE_TAG,
     JSX_TAG,
+    TEMPL_TAG,
 }
 M.enable_rename = true
 M.enable_close = true
@@ -244,7 +260,6 @@ local function find_tag_node(opt)
             pattern = tag_pattern,
             skip_tag_pattern = skip_tag_pattern,
         })
-
     else
         node = find_parent_match({
             target = target,
@@ -262,7 +277,6 @@ local function find_tag_node(opt)
     if name_node then
         return name_node
     end
-
 
     -- check current node is have same name of tag_match
     if is_in_table(name_tag_pattern, node:type()) then
@@ -445,7 +459,6 @@ local function rename_start_tag()
         tag_pattern = ts_tag.close_tag_pattern,
         name_tag_pattern = ts_tag.close_name_tag_pattern,
     })
-
 
     if close_tag_node == nil then
         close_tag_node = find_child_tag_node({
