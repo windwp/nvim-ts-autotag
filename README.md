@@ -77,7 +77,7 @@ local filetypes = {
     'markdown',
     'astro', 'glimmer', 'handlebars', 'hbs'
 }
-local skip_tags = {
+local skip_tag = {
   'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'slot',
   'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr','menuitem'
 }
