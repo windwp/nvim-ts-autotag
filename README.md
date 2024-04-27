@@ -15,6 +15,7 @@ It works with:
 - rescript
 - svelte
 - tsx
+- twig
 - typescript
 - vue
 - xml
@@ -75,7 +76,7 @@ local filetypes = {
     'xml',
     'php',
     'markdown',
-    'astro', 'glimmer', 'handlebars', 'hbs'
+    'astro', 'glimmer', 'handlebars', 'hbs', 'twig'
 }
 local skip_tag = {
   'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'slot',
