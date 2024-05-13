@@ -5,12 +5,12 @@ on: [push, pull_request]
 jobs:
   x64-ubuntu:
     name: X64-ubuntu
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-20.04
+          - os: ubuntu-24.04
             url: https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.tar.gz
             manager: sudo apt-get
             packages: -y fd-find tree-sitter-cli
