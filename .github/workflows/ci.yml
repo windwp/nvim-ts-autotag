@@ -1,39 +1,13 @@
 name: Tests
 
-on: [push, pull_request]
+on: [push, pull_request, workflow_call]
 
 jobs:
   x64-ubuntu:
-    name: X64-ubuntu
-    runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-24.04
-            url: https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.tar.gz
-            manager: sudo apt-get
-            packages: -y fd-find tree-sitter-cli
+    name: nix-runner
+    runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v3
-      - run: date +%F > todays-date
-      - name: Restore cache for today's nightly.
-        uses: actions/cache@v3
-        with:
-          path: _neovim
-          key: ${{ runner.os }}-${{ matrix.url }}-${{ hashFiles('todays-date') }}
-
-      - name: Prepare
-        run: |
-          ${{ matrix.manager }} update
-          ${{ matrix.manager }} install ${{ matrix.packages }}
-          test -d _neovim || {
-            mkdir -p _neovim
-            curl -sL ${{ matrix.url }} | tar xzf - --strip-components=1 -C "${PWD}/_neovim"
-          }
+      - uses: actions/checkout@v4
 
       - name: Run tests
-        run: |
-          export PATH="${PWD}/_neovim/bin:${PATH}"
-          export VIMRUNTIME="${PWD}/_neovim/share/nvim/runtime"
-          make test
+        run: make test
