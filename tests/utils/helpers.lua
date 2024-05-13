@@ -37,6 +37,7 @@ end
 
 M.setup_nvim_treesitter = function(opts)
     opts = vim.tbl_deep_extend("keep", opts or {}, {
+        sync_install = true,
         ensure_installed = {
             "html",
             "javascript",
