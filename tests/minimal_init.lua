@@ -44,6 +44,41 @@ function M.load_plugin(plugin_name, plugin_clone_args)
     print(("[LOAD PLUGIN] Loaded plugin '%s'"):format(plugin_name))
 end
 
+function M.setup_treesitter()
+    print("[TREESITTER] Setting up nvim-treesitter")
+    local parser_cfgs = require("nvim-treesitter.parsers").get_parser_configs()
+    for parser_name, parser_cfg in pairs({
+        rescript = {
+            install_info = {
+                url = "https://github.com/rescript-lang/tree-sitter-rescript",
+                branch = "main",
+                files = { "src/parser.c" },
+                generate_requires_npm = false,
+                requires_generate_from_grammar = true,
+                use_makefile = true,
+            },
+        },
+    }) do
+        parser_cfgs[parser_name] = parser_cfg
+    end
+    require("nvim-treesitter.configs").setup({
+        sync_install = true,
+        ensure_installed = {
+            "html",
+            "javascript",
+            "typescript",
+            "svelte",
+            "vue",
+            "tsx",
+            "php",
+            "glimmer",
+            "rescript",
+            "embedded_template",
+        },
+    })
+    print("[TREESITTER] Done setting up nvim-treesitter")
+end
+
 ---Do the initial setup. Downloads plugins, ensures the minimal init does not pollute the filesystem by keeping
 ---everything self contained to the CWD of the minimal init file. Run prior to running tests, reproducing issues, etc.
 ---@param plugins? MinPlugins
@@ -59,27 +94,20 @@ function M.setup(plugins)
         "config",
         "state",
     }
+    local clean = (vim.env.TEST_CLEANUP and vim.env.TEST_CLEANUP:lower() or true)
+    if clean then
+        vim.fn.delete(xdg_root:get(), "rf")
+    elseif clean == "false" or clean == "0" then
+        print("[CLEANUP]: `TEST_CLEANUP` was disabled, not cleaning " .. xdg_root:get())
+    end
     for _, std_path in pairs(std_paths) do
         local xdg_str = "XDG_" .. std_path:upper() .. "_HOME"
         local xdg_path = xdg_root:push(std_path):get()
-        print(("[SETUP] Set vim.env.%-3s -> %s"):format(xdg_str, xdg_path))
+        print(("[SETUP] Set vim.env.%s -> %s"):format(xdg_str, xdg_path))
         vim.env[xdg_str] = xdg_path
         ---@diagnostic disable-next-line: param-type-mismatch
-        vim.fn.mkdir(vim.fn.stdpath(std_path), "p")
+        vim.fn.mkdir(xdg_path, "p")
     end
-
-    -- Ignore cleanups if specified in the environment
-    -- NOTE: Cleanup the xdg cache on exit so new runs of the minimal init doesn't share any previous state, e.g. shada
-    vim.api.nvim_create_autocmd("VimLeave", {
-        callback = function()
-            if vim.env.TEST_NO_CLEANUP and vim.env.TEST_NO_CLEANUP:lower() == "true" then
-                print("[CLEANUP]: `TEST_NO_CLEANUP` was specified, not removing: " .. xdg_root)
-            else
-                print("[CLEANUP]: `TEST_NO_CLEANUP` not specified, removing " .. xdg_root)
-                vim.fn.delete(xdg_root:get(), "rf")
-            end
-        end,
-    })
 
     -- Empty the package path so we use only the plugins specified
     vim.opt.packpath = {}
@@ -91,6 +119,9 @@ function M.setup(plugins)
         end
     end
 
+    -- Setup nvim-treesitter
+    M.setup_treesitter()
+
     -- Ensure `nvim-ts-autotag` is registed on the runtimepath and set it up
     utils.rtp_register_ts_autotag()
     require("nvim-ts-autotag").setup({
@@ -99,6 +130,7 @@ function M.setup(plugins)
         enable_close = true,
         enable_close_on_slash = true,
     })
+
     print("[SETUP] Finished setting up minimal init")
 end
 
@@ -107,5 +139,4 @@ M.setup({
     ["popup.nvim"] = "https://github.com/nvim-lua/popup.nvim",
     ["nvim-treesitter"] = "https://github.com/nvim-treesitter/nvim-treesitter",
     ["playground"] = "https://github.com/nvim-treesitter/playground",
-    ["nvim-treesitter-rescript"] = "https://github.com/nkrkv/nvim-treesitter-rescript",
 })

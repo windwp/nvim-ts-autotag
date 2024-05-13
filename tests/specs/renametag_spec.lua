@@ -1,12 +1,4 @@
 local helpers = require("tests.utils.helpers")
-helpers.setup_nvim_treesitter({
-
-    highlight = {
-        use_languagetree = false,
-        enable = true,
-    },
-    fold = { enable = false },
-})
 
 local data = {
     {
