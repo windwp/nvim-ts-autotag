@@ -51,6 +51,7 @@ M.setup_nvim_treesitter = function(opts)
             "embedded_template",
         },
     })
+    require("nvim-treesitter.configs").setup(opts)
 end
 
 M.Test_filter = function(data)
