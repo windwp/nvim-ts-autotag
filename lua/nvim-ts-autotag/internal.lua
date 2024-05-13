@@ -253,6 +253,13 @@ local function find_tag_node(opt)
     local name_tag_pattern = opt.name_tag_pattern
     local skip_tag_pattern = opt.skip_tag_pattern
     local find_child = opt.find_child or false
+    --- PERF: Some parsers don't seemingly pick up their trees correctly, so we have to reparse the
+    --- entire source. This is slow, see if we can avoid this.
+    if target and target:has_changes() then
+        local parser = vim.treesitter.get_parser()
+        _ = (parser and parser:parse(true) or nil)
+        target = ts_utils.get_node_at_cursor()
+    end
     local node
     if find_child then
         node = find_child_match({
