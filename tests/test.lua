@@ -1,3 +1,7 @@
+-- Ensure our test lua files are in `package.path`
+local fdir = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":p:h:h")
+package.path = fdir .. "/?.lua;" .. package.path
+
 require("tests.minimal_init")
 
 ---@type string
