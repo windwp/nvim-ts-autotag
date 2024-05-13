@@ -3,92 +3,122 @@ local utils = require("nvim-ts-autotag.utils")
 
 local M = {}
 
--- stylua: ignore
 M.tbl_filetypes = {
-    'html', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'svelte', 'vue', 'tsx', 'jsx', 'rescript',
-    'xml',
-    'php',
-    'markdown',
-    'astro', 'glimmer', 'handlebars', 'hbs', 'twig',
-    'htmldjango',
-    'eruby',
-    'templ',
-    'blade',
+    "html",
+    "javascript",
+    "typescript",
+    "javascriptreact",
+    "typescriptreact",
+    "svelte",
+    "vue",
+    "tsx",
+    "jsx",
+    "rescript",
+    "xml",
+    "php",
+    "markdown",
+    "astro",
+    "glimmer",
+    "handlebars",
+    "hbs",
+    "twig",
+    "htmldjango",
+    "eruby",
+    "templ",
+    "blade",
 }
 
--- stylua: ignore
 M.tbl_skipTag = {
-    'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'slot',
-    'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr', 'menuitem'
+    "area",
+    "base",
+    "br",
+    "col",
+    "command",
+    "embed",
+    "hr",
+    "img",
+    "slot",
+    "input",
+    "keygen",
+    "link",
+    "meta",
+    "param",
+    "source",
+    "track",
+    "wbr",
+    "menuitem",
 }
 
--- stylua: ignore
 local HTML_TAG = {
-    filetypes              = {
-        'astro',
-        'html',
-        'htmldjango',
-        'markdown',
-        'php',
-        'twig',
-        'xml',
-        'blade',
+    filetypes = {
+        "astro",
+        "html",
+        "htmldjango",
+        "markdown",
+        "php",
+        "twig",
+        "xml",
+        "blade",
     },
-    start_tag_pattern      = { 'start_tag', 'STag' },
-    start_name_tag_pattern = { 'tag_name', 'Name' },
-    end_tag_pattern        = { 'end_tag', 'ETag' },
-    end_name_tag_pattern   = { 'tag_name', 'Name' },
-    close_tag_pattern      = { 'erroneous_end_tag' },
-    close_name_tag_pattern = { 'erroneous_end_tag_name' },
-    element_tag            = { 'element' },
-    skip_tag_pattern       = { 'quoted_attribute_value', 'end_tag' },
+    start_tag_pattern = { "start_tag", "STag" },
+    start_name_tag_pattern = { "tag_name", "Name" },
+    end_tag_pattern = { "end_tag", "ETag" },
+    end_name_tag_pattern = { "tag_name", "Name" },
+    close_tag_pattern = { "erroneous_end_tag" },
+    close_name_tag_pattern = { "erroneous_end_tag_name" },
+    element_tag = { "element" },
+    skip_tag_pattern = { "quoted_attribute_value", "end_tag" },
 }
--- stylua: ignore
+
 local JSX_TAG = {
-    filetypes              = {
-        'typescriptreact', 'javascriptreact', 'javascript.jsx',
-        'typescript.tsx', 'javascript', 'typescript', 'rescript'
+    filetypes = {
+        "typescriptreact",
+        "javascriptreact",
+        "javascript.jsx",
+        "typescript.tsx",
+        "javascript",
+        "typescript",
+        "rescript",
     },
-    start_tag_pattern      = { 'jsx_opening_element', 'start_tag' },
-    start_name_tag_pattern = { 'identifier', 'nested_identifier', 'tag_name', 'member_expression', 'jsx_identifier' },
-    end_tag_pattern        = { 'jsx_closing_element', 'end_tag' },
-    end_name_tag_pattern   = { 'identifier', 'tag_name' },
-    close_tag_pattern      = { 'jsx_closing_element', 'nested_identifier' },
-    close_name_tag_pattern = { 'member_expression', 'nested_identifier', 'jsx_identifier', 'identifier', '>' },
-    element_tag            = { 'jsx_element', 'element' },
-    skip_tag_pattern       = {
-        'jsx_closing_element', 'jsx_expression', 'string', 'jsx_attribute', 'end_tag',
-        'string_fragment'
+    start_tag_pattern = { "jsx_opening_element", "start_tag" },
+    start_name_tag_pattern = { "identifier", "nested_identifier", "tag_name", "member_expression", "jsx_identifier" },
+    end_tag_pattern = { "jsx_closing_element", "end_tag" },
+    end_name_tag_pattern = { "identifier", "tag_name" },
+    close_tag_pattern = { "jsx_closing_element", "nested_identifier" },
+    close_name_tag_pattern = { "member_expression", "nested_identifier", "jsx_identifier", "identifier", ">" },
+    element_tag = { "jsx_element", "element" },
+    skip_tag_pattern = {
+        "jsx_closing_element",
+        "jsx_expression",
+        "string",
+        "jsx_attribute",
+        "end_tag",
+        "string_fragment",
     },
-
 }
 
-
--- stylua: ignore
 local HBS_TAG = {
-    filetypes              = { 'glimmer', 'handlebars', 'hbs', 'htmldjango' },
-    start_tag_pattern      = { 'element_node_start' },
-    start_name_tag_pattern = { 'tag_name' },
-    end_tag_pattern        = { 'element_node_end' },
-    end_name_tag_pattern   = { 'tag_name' },
-    close_tag_pattern      = { 'element_node_end' },
-    close_name_tag_pattern = { 'tag_name' },
-    element_tag            = { 'element_node' },
-    skip_tag_pattern       = { 'element_node_end', 'attribute_node', 'concat_statement' },
+    filetypes = { "glimmer", "handlebars", "hbs", "htmldjango" },
+    start_tag_pattern = { "element_node_start" },
+    start_name_tag_pattern = { "tag_name" },
+    end_tag_pattern = { "element_node_end" },
+    end_name_tag_pattern = { "tag_name" },
+    close_tag_pattern = { "element_node_end" },
+    close_name_tag_pattern = { "tag_name" },
+    element_tag = { "element_node" },
+    skip_tag_pattern = { "element_node_end", "attribute_node", "concat_statement" },
 }
 
-
--- stylua: ignore
 local SVELTE_TAG = {
-    filetypes              = { 'svelte' },
-    start_tag_pattern      = { 'start_tag' },
-    start_name_tag_pattern = { 'tag_name' },
-    end_tag_pattern        = { 'end_tag' },
-    end_name_tag_pattern   = { 'tag_name' },
-    close_tag_pattern      = { 'erroneous_end_tag' },
-    close_name_tag_pattern = { 'erroneous_end_tag_name' },
-    element_tag            = { 'element' },
-    skip_tag_pattern       = { 'quoted_attribute_value', 'end_tag' },
+    filetypes = { "svelte" },
+    start_tag_pattern = { "start_tag" },
+    start_name_tag_pattern = { "tag_name" },
+    end_tag_pattern = { "end_tag" },
+    end_name_tag_pattern = { "tag_name" },
+    close_tag_pattern = { "erroneous_end_tag" },
+    close_name_tag_pattern = { "erroneous_end_tag_name" },
+    element_tag = { "element" },
+    skip_tag_pattern = { "quoted_attribute_value", "end_tag" },
 }
 
 local TEMPL_TAG = {
@@ -111,6 +141,7 @@ local all_tag = {
     JSX_TAG,
     TEMPL_TAG,
 }
+
 M.enable_rename = true
 M.enable_close = true
 M.enable_close_on_slash = false
