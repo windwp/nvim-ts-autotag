@@ -13,6 +13,7 @@ M.tbl_filetypes = {
     'htmldjango',
     'eruby',
     'templ',
+    'blade',
 }
 
 -- stylua: ignore
@@ -31,6 +32,7 @@ local HTML_TAG = {
         'php',
         'twig',
         'xml',
+        'blade',
     },
     start_tag_pattern      = { 'start_tag', 'STag' },
     start_name_tag_pattern = { 'tag_name', 'Name' },
