@@ -35,25 +35,6 @@ M.feed = function(text, num)
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(result, true, false, true), "x", true)
 end
 
-M.setup_nvim_treesitter = function(opts)
-    opts = vim.tbl_deep_extend("keep", opts or {}, {
-        sync_install = true,
-        ensure_installed = {
-            "html",
-            "javascript",
-            "typescript",
-            "svelte",
-            "vue",
-            "tsx",
-            "php",
-            "glimmer",
-            "rescript",
-            "embedded_template",
-        },
-    })
-    require("nvim-treesitter.configs").setup(opts)
-end
-
 M.Test_filter = function(data)
     local run_data = {}
     for _, value in pairs(data) do
