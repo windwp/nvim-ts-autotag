@@ -605,31 +605,31 @@ M.attach = function(bufnr, lang)
         setup_ts_tag()
         local group = vim.api.nvim_create_augroup("nvim-ts-autotag", { clear = true })
         if M.enable_close == true then
-            vim.api.nvim_buf_set_keymap(bufnr or 0, "i", ">", ">", {
+            vim.keymap.set("i", ">", function()
+                local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+                vim.api.nvim_buf_set_text(bufnr or 0, row - 1, col, row - 1, col, { ">" })
+                M.close_tag()
+                vim.api.nvim_win_set_cursor(0, { row, col + 1 })
+            end, {
                 noremap = true,
                 silent = true,
-                callback = function()
-                    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-                    vim.api.nvim_buf_set_text(bufnr or 0, row - 1, col, row - 1, col, { ">" })
-                    M.close_tag()
-                    vim.api.nvim_win_set_cursor(0, { row, col + 1 })
-                end,
             })
         end
         if M.enable_close_on_slash == true then
-            vim.api.nvim_buf_set_keymap(bufnr or 0, "i", "/", "/", {
+            vim.keymap.set("i", "/", function()
+                M.enable_close_on_slash = false
+                local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+                vim.api.nvim_buf_set_text(bufnr or 0, row - 1, col, row - 1, col, { "/" })
+                if is_before_arrow() then
+                    log.debug("is_before_arrow")
+                    M.close_slash_tag()
+                end
+                local new_row, new_col = unpack(vim.api.nvim_win_get_cursor(0))
+                vim.api.nvim_win_set_cursor(0, { new_row, new_col + 1 })
+                M.enable_close_on_slash = true
+            end, {
                 noremap = true,
                 silent = true,
-                callback = function()
-                    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-                    vim.api.nvim_buf_set_text(bufnr or 0, row - 1, col, row - 1, col, { "/" })
-                    if is_before_arrow() then
-                        log.debug("is_before_arrow")
-                        M.close_slash_tag()
-                    end
-                    local new_row, new_col = unpack(vim.api.nvim_win_get_cursor(0))
-                    vim.api.nvim_win_set_cursor(0, { new_row, new_col + 1 })
-                end,
             })
         end
         if M.enable_rename == true then
