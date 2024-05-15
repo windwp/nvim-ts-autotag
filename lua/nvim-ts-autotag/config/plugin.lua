@@ -142,10 +142,12 @@ local Setup = {
 --- Do general plugin setup
 ---@param opts nvim-ts-autotag.PluginSetup
 function Setup.setup(opts)
+    opts = opts or {}
     if Setup.did_setup then
         return
     end
-    if opts and not opts.opts then
+    ---@diagnostic disable-next-line: undefined-field
+    if opts.enable_rename or opts.enable_close or opts.enable_close_on_slash then
         vim.notify(
             "nvim-ts-autotag: Using the legacy setup opts! Please migrate to the new setup options layout as this will eventually have its support removed in 1.0.0!",
             vim.log.levels.WARN
