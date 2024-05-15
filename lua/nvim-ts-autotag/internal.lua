@@ -152,15 +152,9 @@ M.setup = function(opts)
     opts = opts or {}
     M.tbl_filetypes = opts.filetypes or M.tbl_filetypes
     M.tbl_skipTag = opts.skip_tag or M.tbl_skipTag
-    if opts.enable_rename ~= nil then
-        M.enable_rename = opts.enable_rename
-    end
-    if opts.enable_close ~= nil then
-        M.enable_close = opts.enable_close
-    end
-    if opts.enable_close_on_slash ~= nil then
-        M.enable_close_on_slash = opts.enable_close_on_slash
-    end
+    M.enable_rename = opts.enable_rename or M.enable_rename
+    M.enable_close = opts.enable_close or M.enable_close
+    M.enable_close_on_slash = opts.enable_close_on_slash or M.enable_close_on_slash
     did_setup = true
 end
 
