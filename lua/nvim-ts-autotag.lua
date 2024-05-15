@@ -11,7 +11,7 @@ function M.init()
     end
     nvim_ts.define_modules({
         autotag = {
-            attach = function(bufnr, lang)
+            attach = function(bufnr, _)
                 vim.deprecate(
                     "Nvim Treesitter Setup",
                     "`require('nvim-ts-autotag').setup()`",
@@ -19,7 +19,7 @@ function M.init()
                     "nvim-ts-autotag",
                     true
                 )
-                internal.attach(bufnr, lang)
+                internal.attach(bufnr)
             end,
             detach = function(bufnr)
                 internal.detach(bufnr)
@@ -32,21 +32,6 @@ function M.init()
   end
 end
 
-function M.setup(opts)
-    internal.setup(opts)
-    local augroup = vim.api.nvim_create_augroup("nvim_ts_xmltag", { clear = true })
-    vim.api.nvim_create_autocmd("Filetype", {
-        group = augroup,
-        callback = function(args)
-            require("nvim-ts-autotag.internal").attach(args.buf)
-        end,
-    })
-    vim.api.nvim_create_autocmd("BufDelete", {
-        group = augroup,
-        callback = function(args)
-            require("nvim-ts-autotag.internal").detach(args.buf)
-        end,
-    })
-end
+M.setup = require("nvim-ts-autotag.config.plugin").setup
 
 return M
