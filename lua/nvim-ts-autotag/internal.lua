@@ -443,7 +443,12 @@ end
 M.attach = function(bufnr)
     bufnr = bufnr or vim.api.nvim_get_current_buf()
     if not Setup.did_setup then
-        local config = require("nvim-treesitter.configs").get_module("autotag")
+        local _, ts_configs = pcall(require, "nvim-treesitter.configs")
+        if not ts_configs then
+            M.setup({ opts = {} })
+        end
+
+        local config = ts_configs.get_module("autotag")
         Setup.setup(config)
     end
 
