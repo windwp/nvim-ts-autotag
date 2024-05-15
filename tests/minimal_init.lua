@@ -128,10 +128,11 @@ function M.setup(plugins)
     -- Ensure `nvim-ts-autotag` is registed on the runtimepath and set it up
     utils.rtp_register_ts_autotag()
     require("nvim-ts-autotag").setup({
-        enable = true,
-        enable_rename = true,
-        enable_close = true,
-        enable_close_on_slash = true,
+        opts = {
+            enable_rename = true,
+            enable_close = true,
+            enable_close_on_slash = true,
+        },
     })
 
     print("[SETUP] Finished setting up minimal init")

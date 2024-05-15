@@ -1,162 +1,9 @@
 local log = require("nvim-ts-autotag._log")
+local TagConfigs = require("nvim-ts-autotag.config.init")
+local Setup = require("nvim-ts-autotag.config.plugin")
 local utils = require("nvim-ts-autotag.utils")
 
 local M = {}
-
-M.tbl_filetypes = {
-    "html",
-    "javascript",
-    "typescript",
-    "javascriptreact",
-    "typescriptreact",
-    "svelte",
-    "vue",
-    "tsx",
-    "jsx",
-    "rescript",
-    "xml",
-    "php",
-    "markdown",
-    "astro",
-    "glimmer",
-    "handlebars",
-    "hbs",
-    "twig",
-    "htmldjango",
-    "eruby",
-    "templ",
-    "blade",
-}
-
-M.tbl_skipTag = {
-    "area",
-    "base",
-    "br",
-    "col",
-    "command",
-    "embed",
-    "hr",
-    "img",
-    "slot",
-    "input",
-    "keygen",
-    "link",
-    "meta",
-    "param",
-    "source",
-    "track",
-    "wbr",
-    "menuitem",
-}
-
-local HTML_TAG = {
-    filetypes = {
-        "astro",
-        "html",
-        "htmldjango",
-        "markdown",
-        "php",
-        "twig",
-        "xml",
-        "blade",
-    },
-    start_tag_pattern = { "start_tag", "STag" },
-    start_name_tag_pattern = { "tag_name", "Name" },
-    end_tag_pattern = { "end_tag", "ETag" },
-    end_name_tag_pattern = { "tag_name", "Name" },
-    close_tag_pattern = { "erroneous_end_tag" },
-    close_name_tag_pattern = { "erroneous_end_tag_name" },
-    element_tag = { "element" },
-    skip_tag_pattern = { "quoted_attribute_value", "end_tag" },
-}
-
-local JSX_TAG = {
-    filetypes = {
-        "typescriptreact",
-        "javascriptreact",
-        "javascript.jsx",
-        "typescript.tsx",
-        "javascript",
-        "typescript",
-        "rescript",
-    },
-    start_tag_pattern = { "jsx_opening_element", "start_tag" },
-    start_name_tag_pattern = { "identifier", "nested_identifier", "tag_name", "member_expression", "jsx_identifier" },
-    end_tag_pattern = { "jsx_closing_element", "end_tag" },
-    end_name_tag_pattern = { "identifier", "tag_name" },
-    close_tag_pattern = { "jsx_closing_element", "nested_identifier" },
-    close_name_tag_pattern = { "member_expression", "nested_identifier", "jsx_identifier", "identifier", ">" },
-    element_tag = { "jsx_element", "element" },
-    skip_tag_pattern = {
-        "jsx_closing_element",
-        "jsx_expression",
-        "string",
-        "jsx_attribute",
-        "end_tag",
-        "string_fragment",
-    },
-}
-
-local HBS_TAG = {
-    filetypes = { "glimmer", "handlebars", "hbs", "htmldjango" },
-    start_tag_pattern = { "element_node_start" },
-    start_name_tag_pattern = { "tag_name" },
-    end_tag_pattern = { "element_node_end" },
-    end_name_tag_pattern = { "tag_name" },
-    close_tag_pattern = { "element_node_end" },
-    close_name_tag_pattern = { "tag_name" },
-    element_tag = { "element_node" },
-    skip_tag_pattern = { "element_node_end", "attribute_node", "concat_statement" },
-}
-
-local SVELTE_TAG = {
-    filetypes = { "svelte" },
-    start_tag_pattern = { "start_tag" },
-    start_name_tag_pattern = { "tag_name" },
-    end_tag_pattern = { "end_tag" },
-    end_name_tag_pattern = { "tag_name" },
-    close_tag_pattern = { "erroneous_end_tag" },
-    close_name_tag_pattern = { "erroneous_end_tag_name" },
-    element_tag = { "element" },
-    skip_tag_pattern = { "quoted_attribute_value", "end_tag" },
-}
-
-local TEMPL_TAG = {
-    filetypes = {
-        "templ",
-    },
-    start_tag_pattern = { "tag_start" },
-    start_name_tag_pattern = { "element_identifier" },
-    end_tag_pattern = { "tag_end" },
-    end_name_tag_pattern = { "element_identifier" },
-    close_tag_pattern = { "erroneous_end_tag" },
-    close_name_tag_pattern = { "erroneous_end_tag_name" },
-    element_tag = { "element" },
-    skip_tag_pattern = { "quoted_attribute_value", "tag_end" },
-}
-
-local all_tag = {
-    HBS_TAG,
-    SVELTE_TAG,
-    JSX_TAG,
-    TEMPL_TAG,
-}
-
-M.enable_rename = true
-M.enable_close = true
-M.enable_close_on_slash = false
-
-local did_setup = false
-
-M.setup = function(opts)
-    opts = opts or {}
-    M.tbl_filetypes = opts.filetypes or M.tbl_filetypes
-    M.tbl_skipTag = opts.skip_tag or M.tbl_skipTag
-    M.enable_rename = opts.enable_rename or M.enable_rename
-    M.enable_close = opts.enable_close or M.enable_close
-    M.enable_close_on_slash = opts.enable_close_on_slash or M.enable_close_on_slash
-    did_setup = true
-end
 
 local function is_in_table(tbl, val)
     if tbl == nil then
@@ -171,20 +18,20 @@ local function is_in_table(tbl, val)
 end
 
 M.is_supported = function(lang)
-    return is_in_table(M.tbl_filetypes, lang)
+    return TagConfigs:get(lang) ~= nil
 end
 
 local buffer_tag = {}
 
 local setup_ts_tag = function()
     local bufnr = vim.api.nvim_get_current_buf()
-    for _, value in pairs(all_tag) do
-        if is_in_table(value.filetypes, vim.bo.filetype) then
-            buffer_tag[bufnr] = value
-            return value
-        end
+    local tag_pats = TagConfigs:get_patterns(vim.bo.filetype)
+    if tag_pats then
+        buffer_tag[bufnr] = tag_pats
+    else
+        -- HACK: Crappy fallback
+        buffer_tag[bufnr] = TagConfigs:get_patterns("html")
     end
-    buffer_tag[bufnr] = HTML_TAG
 end
 
 local function is_in_template_tag()
@@ -210,9 +57,10 @@ local function is_in_template_tag()
     return has_element and has_template_string
 end
 
+---@return nvim-ts-autotag.FiletypeConfig.patterns?
 local function get_ts_tag()
     if is_in_template_tag() then
-        return HTML_TAG
+        return TagConfigs:get_patterns("html")
     else
         return buffer_tag[vim.api.nvim_get_current_buf()]
     end
@@ -366,7 +214,7 @@ local function check_close_tag(close_slash_tag)
     })
     if tag_node ~= nil then
         local tag_name = get_tag_name(tag_node)
-        if tag_name ~= nil and is_in_table(M.tbl_skipTag, tag_name) then
+        if tag_name ~= nil and vim.list_contains(ts_tag.skip_tag_pattern, tag_name) then
             return false
         end
         if tag_node ~= nil then
@@ -592,17 +440,17 @@ M.rename_tag = function()
     end
 end
 
-M.attach = function(bufnr, lang)
+M.attach = function(bufnr)
     bufnr = bufnr or vim.api.nvim_get_current_buf()
-    if not did_setup then
+    if not Setup.did_setup then
         local config = require("nvim-treesitter.configs").get_module("autotag")
-        M.setup(config)
+        Setup.setup(config)
     end
 
-    if is_in_table(M.tbl_filetypes, vim.bo.filetype) then
+    if TagConfigs:get(vim.bo.filetype) ~= nil then
         setup_ts_tag()
         local group = vim.api.nvim_create_augroup("nvim-ts-autotag", { clear = true })
-        if M.enable_close == true then
+        if Setup.get_opts(vim.bo.filetype).enable_close then
             vim.keymap.set("i", ">", function()
                 local row, col = unpack(vim.api.nvim_win_get_cursor(0))
                 vim.api.nvim_buf_set_text(bufnr, row - 1, col, row - 1, col, { ">" })
@@ -614,7 +462,7 @@ M.attach = function(bufnr, lang)
                 buffer = bufnr,
             })
         end
-        if M.enable_close_on_slash == true then
+        if Setup.get_opts(vim.bo.filetype).enable_close_on_slash then
             vim.keymap.set("i", "/", function()
                 local row, col = unpack(vim.api.nvim_win_get_cursor(0))
                 vim.api.nvim_buf_set_text(bufnr, row - 1, col, row - 1, col, { "/" })
@@ -630,7 +478,7 @@ M.attach = function(bufnr, lang)
                 buffer = bufnr,
             })
         end
-        if M.enable_rename == true then
+        if Setup.get_opts(vim.bo.filetype).enable_rename then
             vim.api.nvim_create_autocmd("InsertLeave", {
                 group = group,
                 buffer = bufnr,

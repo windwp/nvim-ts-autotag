@@ -20,6 +20,8 @@ It works with:
 - vue
 - xml
 
+and more
+
 ## Usage
 
 ```text
@@ -42,6 +44,44 @@ require('nvim-ts-autotag').setup()
 > If you are setting up via `nvim-treesitter.configs` it has been deprecated! Please migrate to the
 > new way. It will be removed in `1.0.0`.
 
+### Extending the default config
+
+Let's say that there's a language that `nvim-ts-autotag` doesn't currently support and you'd like to support it in your
+config. While it would be the preference of the author that you upstream your changes, perhaps you would rather not 😢.
+
+For example, if you have a language that has a very similar layout in its Treesitter Queries as `html`, you could add an
+alias like so:
+
+```lua
+require('nvim-ts-autotag').setup({
+  aliases = {
+    ["your language here"] = "html",
+  }
+})
+
+-- or
+local TagConfigs = require("nvim-ts-autotag.config.init")
+TagConfigs:add_alias("your language here", "html")
+```
+
+That will make `nvim-ts-autotag` close tags according to the rules of the `html` config in the given language.
+
+But what if a parser breaks for whatever reason, for example the upstream Treesitter tree changes its node names and now
+the default queries that `nvim-ts-autotag` provides no longer work.
+
+Fear not! You can directly extend and override the existing configs. For example, let's say the start and end tag
+patterns have changed for `xml`. We can directly override the `xml` config:
+
+```lua
+local TagConfigs = require("nvim-ts-autotag.config.init")
+TagConfigs:update(TagConfigs:get("xml"):override("xml", {
+    start_tag_pattern = { "STag" },
+    end_tag_pattern = { "ETag" },
+}))
+```
+
+In fact, this very nearly what we do during our own internal initialization phase for `nvim-ts-autotag`.
+
 ### Enable update on insert
 
 If you have that issue
@@ -59,31 +99,6 @@ vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
         update_in_insert = true,
     }
 )
-```
-
-## Default values
-
-```lua
-local filetypes = {
-    'html', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'svelte', 'vue', 'tsx', 'jsx', 'rescript',
-    'xml',
-    'php',
-    'markdown',
-    'astro', 'glimmer', 'handlebars', 'hbs', 'twig'
-}
-local skip_tag = {
-  'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'slot',
-  'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr','menuitem'
-}
-
-```
-
-### Override default values
-
-```lua
-require('nvim-ts-autotag').setup({
-  filetypes = { "html" , "xml" },
-})
 ```
 
 ## Fork Status
