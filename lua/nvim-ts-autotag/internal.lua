@@ -593,8 +593,7 @@ M.rename_tag = function()
 end
 
 M.attach = function(bufnr, lang)
-    M.lang = lang
-
+    bufnr = bufnr or vim.api.nvim_get_current_buf()
     if not did_setup then
         local config = require("nvim-treesitter.configs").get_module("autotag")
         M.setup(config)
@@ -606,33 +605,32 @@ M.attach = function(bufnr, lang)
         if M.enable_close == true then
             vim.keymap.set("i", ">", function()
                 local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-                vim.api.nvim_buf_set_text(bufnr or 0, row - 1, col, row - 1, col, { ">" })
+                vim.api.nvim_buf_set_text(bufnr, row - 1, col, row - 1, col, { ">" })
                 M.close_tag()
                 vim.api.nvim_win_set_cursor(0, { row, col + 1 })
             end, {
                 noremap = true,
                 silent = true,
+                buffer = bufnr,
             })
         end
         if M.enable_close_on_slash == true then
             vim.keymap.set("i", "/", function()
-                M.enable_close_on_slash = false
                 local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-                vim.api.nvim_buf_set_text(bufnr or 0, row - 1, col, row - 1, col, { "/" })
+                vim.api.nvim_buf_set_text(bufnr, row - 1, col, row - 1, col, { "/" })
                 if is_before_arrow() then
                     log.debug("is_before_arrow")
                     M.close_slash_tag()
                 end
                 local new_row, new_col = unpack(vim.api.nvim_win_get_cursor(0))
                 vim.api.nvim_win_set_cursor(0, { new_row, new_col + 1 })
-                M.enable_close_on_slash = true
             end, {
                 noremap = true,
                 silent = true,
+                buffer = bufnr,
             })
         end
         if M.enable_rename == true then
-            bufnr = bufnr or vim.api.nvim_get_current_buf()
             vim.api.nvim_create_autocmd("InsertLeave", {
                 group = group,
                 buffer = bufnr,
