@@ -34,11 +34,19 @@ end
 
 function M.setup(opts)
     internal.setup(opts)
-    vim.cmd([[augroup nvim_ts_xmltag]])
-    vim.cmd([[autocmd!]])
-    vim.cmd([[autocmd FileType * call v:lua.require('nvim-ts-autotag.internal').attach()]])
-    vim.cmd([[autocmd BufDelete * lua require('nvim-ts-autotag.internal').detach(vim.fn.expand('<abuf>'))]])
-    vim.cmd([[augroup end]])
+    local augroup = vim.api.nvim_create_augroup("nvim_ts_xmltag", { clear = true })
+    vim.api.nvim_create_autocmd("Filetype", {
+        group = augroup,
+        callback = function(args)
+            require("nvim-ts-autotag.internal").attach(args.buf)
+        end,
+    })
+    vim.api.nvim_create_autocmd("BufDelete", {
+        group = augroup,
+        callback = function(args)
+            require("nvim-ts-autotag.internal").detach(args.buf)
+        end,
+    })
 end
 
 return M
