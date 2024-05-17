@@ -29,6 +29,13 @@ _G.__is_log=true
 _G.ts_filetypes = {
   'html', 'javascript', 'typescript', 'svelte', 'vue', 'tsx', 'php', 'glimmer', 'rescript', 'embedded_template'
 }
+require("nvim-treesitter.configs").setup({
+    ensure_installed = _G.ts_filetypes,
+    highlight = { enable = true },
+    sync_install = true
+})
+vim.treesitter.language.register('tsx', 'typescriptreact')
+vim.treesitter.language.register('embedded_template', 'eruby')
 require("plenary/busted")
 vim.cmd[[luafile ./tests/test-utils.lua]]
 require("nvim-ts-autotag").setup({

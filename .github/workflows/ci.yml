@@ -11,7 +11,7 @@ jobs:
       matrix:
         include:
           - os: ubuntu-20.04
-            url: https://github.com/neovim/neovim/releases/download/v0.7.0/nvim-linux64.tar.gz
+            url: https://github.com/neovim/neovim/releases/download/v0.9.5/nvim-linux64.tar.gz
             manager: sudo apt-get
             packages: -y fd-find
     steps:
@@ -43,5 +43,6 @@ jobs:
         run: |
           export PATH="${PWD}/_neovim/bin:${PATH}"
           export VIM="${PWD}/_neovim/share/nvim/runtime"
-          nvim --headless -u tests/minimal.vim -c "TSInstallSync html javascript typescript svelte vue tsx php glimmer rescript" -c "q"
+          # nvim --headless -u tests/minimal.vim -c "q"
+          nvim --headless -u tests/minimal.vim -c "PlenaryBustedDirectory tests/ {minimal_init = 'tests/minimal.vim', sequential = true}"
           make test
