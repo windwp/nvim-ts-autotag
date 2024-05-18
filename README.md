@@ -34,7 +34,7 @@ Before        Input         After
 
 ## Setup
 
-Requires `Nvim 0.9.0` and up.
+Requires `Nvim 0.9.5` and up.
 
 ```lua
 require('nvim-ts-autotag').setup({
