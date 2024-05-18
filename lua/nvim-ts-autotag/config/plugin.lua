@@ -112,7 +112,8 @@ local Opts = {
 }
 
 ---@class nvim-ts-autotag.PluginSetup
----@field opts nvim-ts-autotag.Opts?
+---@field private did_setup boolean
+---@field opts nvim-ts-autotag.Opts? General setup optionss
 ---@field aliases { [string]: string }? Aliases a filetype to an existing filetype tag config
 ---@field per_filetype { [string]: nvim-ts-autotag.Opts }? Per filetype config overrides
 local Setup = {
