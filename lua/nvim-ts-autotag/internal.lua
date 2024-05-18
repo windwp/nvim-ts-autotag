@@ -442,6 +442,7 @@ end
 
 M.attach = function(bufnr)
     bufnr = bufnr or vim.api.nvim_get_current_buf()
+    ---@diagnostic disable-next-line: invisible
     if not Setup.did_setup then
         local _, ts_configs = pcall(require, "nvim-treesitter.configs")
         if not ts_configs then
