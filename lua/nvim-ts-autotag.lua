@@ -3,14 +3,17 @@ local internal = require("nvim-ts-autotag.internal")
 local M = {}
 
 function M.init()
-  require "nvim-treesitter".define_modules {
-    autotag = {
-      module_path = 'nvim-ts-autotag.internal',
-      is_supported = function(lang)
-        return internal.is_supported(lang)
-      end
-    }
-  }
+  local ts = require('nvim-treesitter')
+  if ts and ts.define_modules then
+    require('nvim-treesitter').define_modules({
+      autotag = {
+        module_path = 'nvim-ts-autotag.internal',
+        is_supported = function(lang)
+          return internal.is_supported(lang)
+        end,
+      },
+    })
+  end
 end
 
 function M.setup(opts)
