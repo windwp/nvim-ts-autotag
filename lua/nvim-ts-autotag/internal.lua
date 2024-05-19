@@ -482,8 +482,8 @@ local function rename_start_tag()
             -- log.debug("do replace")
             -- log.debug(tag_name)
             -- log.debug(close_tag_name)
-            if close_tag_name == '>' then
-                tag_name = tag_name .. '>'
+            if close_tag_name == ">" then
+                tag_name = tag_name .. ">"
             end
             replace_text_node(close_tag_node, tag_name)
         end
@@ -528,7 +528,7 @@ local function rename_end_tag()
     if start_tag_node ~= nil then
         local start_tag_name = get_tag_name(start_tag_node)
         if tag_name ~= start_tag_name then
-            log.debug('replace end tag')
+            log.debug("replace end tag")
             replace_text_node(start_tag_node, tag_name)
         end
     end
@@ -547,8 +547,8 @@ local function is_before(regex, range)
     end
 end
 
-local is_before_word = is_before('%w', 1)
-local is_before_arrow = is_before('<', 0)
+local is_before_word = is_before("%w", 1)
+local is_before_arrow = is_before("<", 0)
 
 M.rename_tag = function()
     if is_before_word() then
@@ -573,7 +573,7 @@ M.attach = function(bufnr, lang)
 
     if is_in_table(M.tbl_filetypes, vim.bo.filetype) then
         setup_ts_tag()
-        local group = vim.api.nvim_create_augroup('nvim-ts-autotag', { clear = true })
+        local group = vim.api.nvim_create_augroup("nvim-ts-autotag", { clear = true })
         if M.enable_close == true then
             vim.api.nvim_buf_set_keymap(bufnr or 0, "i", ">", ">", {
                 noremap = true,
@@ -594,7 +594,7 @@ M.attach = function(bufnr, lang)
                     local row, col = unpack(vim.api.nvim_win_get_cursor(0))
                     vim.api.nvim_buf_set_text(bufnr or 0, row - 1, col, row - 1, col, { "/" })
                     if is_before_arrow() then
-                        log.debug('is_before_arrow')
+                        log.debug("is_before_arrow")
                         M.close_slash_tag()
                     end
                     local new_row, new_col = unpack(vim.api.nvim_win_get_cursor(0))
