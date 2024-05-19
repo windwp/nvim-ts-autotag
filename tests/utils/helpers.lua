@@ -1,6 +1,13 @@
+local test_utils = require("tests.utils.utils")
+
+-- Some helpers depend on utilities from the main plugin, so we have to register the plugin on the
+-- path if it isn't already present
+test_utils.rtp_register_ts_autotag()
+
 local utils = require("nvim-ts-autotag.utils")
 local log = require("nvim-ts-autotag._log")
-local api = vim.api
+
+local M = {}
 
 local helpers = {}
 
@@ -16,21 +23,36 @@ function helpers.insert(text, is_replace)
     helpers.feed("i" .. text, "x", is_replace)
 end
 
-utils.insert_char = function(text)
-    api.nvim_put({ text }, "c", true, true)
+M.insert_char = function(text)
+    vim.api.nvim_put({ text }, "c", true, true)
 end
 
-utils.feed = function(text, num)
+M.feed = function(text, num)
     local result = ""
     for _ = 1, num, 1 do
         result = result .. text
     end
-    api.nvim_feedkeys(api.nvim_replace_termcodes(result, true, false, true), "x", true)
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(result, true, false, true), "x", true)
 end
 
-_G.eq = assert.are.same
+M.setup_nvim_treesitter = function(opts)
+    opts = vim.tbl_deep_extend("keep", opts or {}, {
+        ensure_installed = {
+            "html",
+            "javascript",
+            "typescript",
+            "svelte",
+            "vue",
+            "tsx",
+            "php",
+            "glimmer",
+            "rescript",
+            "embedded_template",
+        },
+    })
+end
 
-_G.Test_filter = function(data)
+M.Test_filter = function(data)
     local run_data = {}
     for _, value in pairs(data) do
         if value.only == true then
@@ -50,34 +72,34 @@ local compare_text = function(linenr, text_after, name, cursor_add, end_cursor)
     for i = 1, #text_after, 1 do
         local t = string.gsub(text_after[i], "%|", "")
         if t and new_text[i] and t:gsub("%s+$", "") ~= new_text[i]:gsub("%s+$", "") then
-            eq(t, new_text[i], "\n\n text error: " .. name .. "\n")
+            assert.are.same(t, new_text[i], "\n\n text error: " .. name .. "\n")
         end
         local p_after = string.find(text_after[i], "%|")
         if p_after then
             local row, col = utils.get_cursor()
             if end_cursor then
-                eq(row, linenr + i - 2, "\n\n cursor row error: " .. name .. "\n")
-                eq(col + 1, end_cursor, "\n\n end cursor column error : " .. name .. "\n")
+                assert.are.same(row, linenr + i - 2, "\n\n cursor row error: " .. name .. "\n")
+                assert.are.same(col + 1, end_cursor, "\n\n end cursor column error : " .. name .. "\n")
             else
-                eq(row, linenr + i - 2, "\n\n cursor row error: " .. name .. "\n")
+                assert.are.same(row, linenr + i - 2, "\n\n cursor row error: " .. name .. "\n")
                 p_after = p_after + cursor_add
-                eq(col, math.max(p_after - 2, 0), "\n\n cursor column error : " .. name .. "\n")
+                assert.are.same(col, math.max(p_after - 2, 0), "\n\n cursor column error : " .. name .. "\n")
             end
         end
     end
     return true
 end
 
-_G.Test_withfile = function(test_data, cb)
+M.Test_withfile = function(test_data, cb)
     for _, value in pairs(test_data) do
-        it("test " .. value.name, function(done)
+        it("test " .. value.name, function()
             local text_before = {}
             value.linenr = value.linenr or 1
             local pos_before = {
                 linenr = value.linenr,
                 colnr = 0,
             }
-            if not vim.tbl_islist(value.before) then
+            if not vim.islist(value.before) then
                 value.before = { value.before }
             end
             for index, text in pairs(value.before) do
@@ -90,7 +112,7 @@ _G.Test_withfile = function(test_data, cb)
                     end
                 end
             end
-            if not vim.tbl_islist(value.after) then
+            if not vim.islist(value.after) then
                 value.after = { value.after }
             end
             vim.bo.filetype = value.filetype or "text"
@@ -137,14 +159,14 @@ _G.Test_withfile = function(test_data, cb)
     end
 end
 
-_G.dump_node = function(node)
+M.dump_node = function(node)
     local text = utils.get_node_text(node)
     for _, txt in pairs(text) do
         log.debug(txt)
     end
 end
 
-_G.dump_node_text = function(target)
+M.dump_node_text = function(target)
     for node in target:iter_children() do
         local node_type = node:type()
         local text = utils.get_node_text(node)
@@ -152,3 +174,4 @@ _G.dump_node_text = function(target)
         log.debug(text)
     end
 end
+return M
