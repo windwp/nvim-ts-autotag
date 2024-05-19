@@ -16,6 +16,8 @@ function M.init()
   end
 end
 
+function M.ensure_ts_parsers_installed() end
+
 function M.setup(opts)
     internal.setup(opts)
     vim.cmd([[augroup nvim_ts_xmltag]])

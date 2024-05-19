@@ -1,6 +1,6 @@
-local ts = require("nvim-treesitter.configs")
-ts.setup({
-    ensure_installed = _G.ts_filetypes,
+local helpers = require("tests.utils.helpers")
+helpers.setup_nvim_treesitter({
+
     highlight = {
         use_languagetree = false,
         enable = true,
@@ -315,11 +315,11 @@ local data = {
 local autotag = require("nvim-ts-autotag")
 autotag.test = true
 
-local run_data = _G.Test_filter(data)
+local run_data = helpers.Test_filter(data)
 
 describe("[rename tag]", function()
-    _G.Test_withfile(run_data, {
+    helpers.Test_withfile(run_data, {
         cursor_add = 0,
-        before_each = function(value) end,
+        before_each = function() end,
     })
 end)
