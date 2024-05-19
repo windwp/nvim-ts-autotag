@@ -116,9 +116,7 @@ vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
 )
 ```
 
-## Fork Status
+## Sponsor
+If you find this plugin useful, please consider sponsoring the project.
 
-This is forked from https://github.com/windwp/nvim-ts-autotag due to the primary maintainer's disappearance. Any
-PRs/work given to this fork _may_ end up back in the original repository if the primary maintainer comes back.
-
-Full credit to [@windwp](https://github.com/windwp) for the creation of this plugin. Here's to hoping they're ok and will be back sometime down the line.
+[Sponsor](https://paypal.me/trieule1vn)
