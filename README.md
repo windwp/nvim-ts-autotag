@@ -22,7 +22,7 @@ It works with:
 
 ## Usage
 
-``` text
+```text
 Before        Input         After
 ------------------------------------
 <div           >              <div></div>
@@ -30,25 +30,17 @@ Before        Input         After
 ------------------------------------
 ```
 
-
 ## Setup
-Neovim 0.7 and nvim-treesitter to work
 
-User treesitter setup
+Requires `Nvim 0.9.0` and up.
+
 ```lua
-require'nvim-treesitter.configs'.setup {
-  autotag = {
-    enable = true,
-  }
-}
-
-```
-or you can use a set up function
-
-``` lua
 require('nvim-ts-autotag').setup()
-
 ```
+
+> [!CAUTION]
+> If you are setting up via `nvim-treesitter.configs` it has been deprecated! Please migrate to the
+> new way. It will be removed in `1.0.0`.
 
 ### Enable update on insert
 
@@ -68,9 +60,10 @@ vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
     }
 )
 ```
+
 ## Default values
 
-``` lua
+```lua
 local filetypes = {
     'html', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'svelte', 'vue', 'tsx', 'jsx', 'rescript',
     'xml',
@@ -87,25 +80,15 @@ local skip_tag = {
 
 ### Override default values
 
-``` lua
-require'nvim-treesitter.configs'.setup {
-  autotag = {
-    enable = true,
-    enable_rename = true,
-    enable_close = true,
-    enable_close_on_slash = true,
-    filetypes = { "html" , "xml" },
-  }
-}
--- OR
+```lua
 require('nvim-ts-autotag').setup({
   filetypes = { "html" , "xml" },
 })
-
 ```
 
 ## Fork Status
+
 This is forked from https://github.com/windwp/nvim-ts-autotag due to the primary maintainer's disappearance. Any
-PRs/work given to this fork *may* end up back in the original repository if the primary maintainer comes back.
+PRs/work given to this fork _may_ end up back in the original repository if the primary maintainer comes back.
 
 Full credit to [@windwp](https://github.com/windwp) for the creation of this plugin. Here's to hoping they're ok and will be back sometime down the line.
