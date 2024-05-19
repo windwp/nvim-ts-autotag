@@ -29,7 +29,6 @@ function M.init()
             end,
         },
     })
-  end
 end
 
 M.setup = require("nvim-ts-autotag.config.plugin").setup
