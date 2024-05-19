@@ -1,8 +1,5 @@
 local M = {}
 
--- Ensure our test lua files are in `package.path`
-package.path = "?.lua;" .. package.path
-
 local utils = require("tests.utils.utils")
 local root = utils.paths.Root:push(".deps/")
 
@@ -140,5 +137,7 @@ end
 
 M.setup({
     ["plenary.nvim"] = "https://github.com/nvim-lua/plenary.nvim",
+    ["popup.nvim"] = "https://github.com/nvim-lua/popup.nvim",
     ["nvim-treesitter"] = "https://github.com/nvim-treesitter/nvim-treesitter",
+    ["playground"] = "https://github.com/nvim-treesitter/playground",
 })
