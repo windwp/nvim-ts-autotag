@@ -7,6 +7,25 @@ M.get_node_text = function(node)
     return vim.split(txt, "\n") or {}
 end
 
+-- Stolen from nvim `0.10.0` for `0.9.5` users
+--- Checks if a list-like table (integer keys without gaps) contains `value`.
+---
+---
+---@param t table Table to check (must be list-like, not validated)
+---@param value any Value to compare
+---@return boolean `true` if `t` contains `value`
+M.list_contains = function(t, value)
+    vim.validate({ t = { t, "t" } })
+    --- @cast t table<any,any>
+
+    for _, v in ipairs(t) do
+        if v == value then
+            return true
+        end
+    end
+    return false
+end
+
 M.verify_node = function(node, node_tag)
     local txt = get_node_text(node, vim.api.nvim_get_current_buf())
     if txt:match(string.format("^<%s>", node_tag)) and txt:match(string.format("</%s>$", node_tag)) then

@@ -214,7 +214,7 @@ local function check_close_tag(close_slash_tag)
     })
     if tag_node ~= nil then
         local tag_name = get_tag_name(tag_node)
-        if tag_name ~= nil and vim.list_contains(ts_tag.skip_tag_pattern, tag_name) then
+        if tag_name ~= nil and utils.list_contains(ts_tag.skip_tag_pattern, tag_name) then
             return false
         end
         if tag_node ~= nil then

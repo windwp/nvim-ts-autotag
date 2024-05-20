@@ -72,7 +72,7 @@ local compare_text = function(linenr, text_after, name, cursor_add, end_cursor)
     end
     return true
 end
-
+local islist = vim.islist or vim.tbl_islist
 M.Test_withfile = function(test_data, cb)
     for _, value in pairs(test_data) do
         it("test " .. value.name, function()
@@ -82,7 +82,7 @@ M.Test_withfile = function(test_data, cb)
                 linenr = value.linenr,
                 colnr = 0,
             }
-            if not vim.islist(value.before) then
+            if not islist(value.before) then
                 value.before = { value.before }
             end
             for index, text in pairs(value.before) do
@@ -95,7 +95,7 @@ M.Test_withfile = function(test_data, cb)
                     end
                 end
             end
-            if not vim.islist(value.after) then
+            if not islist(value.after) then
                 value.after = { value.after }
             end
             vim.bo.filetype = value.filetype or "text"
