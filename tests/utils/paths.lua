@@ -7,8 +7,9 @@ local M = {}
 local function search_dir_up(test_file)
     -- This is the path of the directory of the current file
     local cur_dir = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":p")
+    local uv = vim.uv or vim.loop
     ---@diagnostic disable-next-line: param-type-mismatch
-    while not vim.uv.fs_stat(cur_dir .. "/" .. test_file, nil) and cur_dir ~= "/" do
+    while not uv.fs_stat(cur_dir .. "/" .. test_file, nil) and cur_dir ~= "/" do
         cur_dir = vim.fn.fnamemodify(cur_dir, ":h")
     end
     if cur_dir == "/" then

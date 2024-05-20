@@ -1,3 +1,5 @@
+local utils = require("nvim-ts-autotag.utils")
+
 ---@alias nvim-ts-autotag.FiletypeConfigPattern string[] A single array of patterns
 
 ---@alias nvim-ts-autotag.FiletypeConfig.filetype string The supported filetype for a given Filetype Config
@@ -83,7 +85,7 @@ function FiletypeConfig:extend(filetype, patterns)
     new.filetype = filetype
     for pat_key, pats in pairs(patterns or {}) do
         for _, pat in ipairs(pats) do
-            if not vim.list_contains(new.patterns[pat_key], pat) then
+            if not utils.list_contains(new.patterns[pat_key], pat) then
                 table.insert(new.patterns[pat_key], pat)
             end
         end
