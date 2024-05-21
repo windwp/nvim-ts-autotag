@@ -91,13 +91,13 @@ local function setup_tag_configs()
 
     TagConfigs:add(base_cfg:extend("templ", {
         start_tag_pattern = { "tag_start" },
-        start_name_tag_pattern = { "element_identifier" },
+        start_name_tag_pattern = { "element_identifier", "name" },
         end_tag_pattern = { "tag_end" },
-        end_name_tag_pattern = { "element_identifier" },
-        close_tag_pattern = { "erroneous_end_tag" },
-        close_name_tag_pattern = { "erroneous_end_tag_name" },
+        end_name_tag_pattern = { "element_identifier", "name" },
+        close_tag_pattern = { "tag_end" },
+        close_name_tag_pattern = { "element_identifier", "name" },
         element_tag = { "element" },
-        skip_tag_pattern = { "quoted_attribute_value", "tag_end" },
+        skip_tag_pattern = { "quoted_attribute_value", "tag_end", "attribute", "value" },
     }))
 end
 
