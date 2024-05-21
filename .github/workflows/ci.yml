@@ -14,6 +14,10 @@ jobs:
             url: https://github.com/neovim/neovim/releases/download/v0.10.0/nvim-linux64.tar.gz
             manager: sudo apt-get
             packages: -y fd-find tree-sitter-cli
+          - os: ubuntu-24.04
+            url: https://github.com/neovim/neovim/releases/download/v0.9.5/nvim-linux64.tar.gz
+            manager: sudo apt-get
+            packages: -y fd-find tree-sitter-cli
     steps:
       - uses: actions/checkout@v3
       - run: date +%F > todays-date
