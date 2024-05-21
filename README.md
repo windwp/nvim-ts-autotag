@@ -59,6 +59,12 @@ require('nvim-ts-autotag').setup({
 > If you are setting up via `nvim-treesitter.configs` it has been deprecated! Please migrate to the
 > new way. It will be removed in `1.0.0`.
 
+### A note on lazy loading
+
+For those of you using lazy loading through a plugin manager (like [lazy.nvim](https://github.com/folke/lazy.nvim)) lazy
+loading is not particularly necessary for this plugin. `nvim-ts-autotag` is efficient in choosing when it needs to load.
+If you still insist on lazy loading `nvim-ts-autotag`, then two good events to use are `BufReadPre` & `BufNewFile`.
+
 ### Extending the default config
 
 Let's say that there's a language that `nvim-ts-autotag` doesn't currently support and you'd like to support it in your
