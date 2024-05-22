@@ -243,8 +243,8 @@ local function check_close_tag(close_slash_tag)
 end
 
 M.close_tag = function()
-    local buf_parser = vim.treesitter.get_parser()
-    if not buf_parser then
+    local ok, buf_parser = pcall(vim.treesitter.get_parser)
+    if not ok then
         return
     end
     buf_parser:parse(true)
@@ -256,8 +256,8 @@ M.close_tag = function()
 end
 
 M.close_slash_tag = function()
-    local buf_parser = vim.treesitter.get_parser()
-    if not buf_parser then
+    local ok, buf_parser = pcall(vim.treesitter.get_parser)
+    if not ok then
         return
     end
     buf_parser:parse(true)
