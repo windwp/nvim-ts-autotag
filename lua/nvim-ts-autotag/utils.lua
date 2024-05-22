@@ -65,8 +65,8 @@ M.get_node_at_cursor = function(winnr)
     local row, col = unpack(vim.api.nvim_win_get_cursor(winnr))
     row = row - 1
     local buf = vim.api.nvim_win_get_buf(winnr)
-    local root_lang_tree = vim.treesitter.get_parser(buf)
-    if not root_lang_tree then
+    local ok, root_lang_tree = pcall(vim.treesitter.get_parser, buf)
+    if not ok then
         return
     end
 
