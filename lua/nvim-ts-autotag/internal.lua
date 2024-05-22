@@ -430,8 +430,8 @@ local is_before_arrow = is_before("<", 0)
 
 M.rename_tag = function()
     if is_before_word() then
-        local parser = vim.treesitter.get_parser()
-        if not parser then
+        local ok, parser = pcall(vim.treesitter.get_parser)
+        if not ok then
             return
         end
         parser:parse(true)
