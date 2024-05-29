@@ -36,6 +36,9 @@ Before        Input         After
 
 Requires `Nvim 0.9.5` and up.
 
+Note that `nvim-ts-autotag` will not work unless you have treesitter parsers (like `html`) installed for a given
+filetype. See [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) for installing parsers.
+
 ```lua
 require('nvim-ts-autotag').setup({
   opts = {
