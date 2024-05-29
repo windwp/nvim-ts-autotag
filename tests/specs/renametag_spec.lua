@@ -302,6 +302,55 @@ local data = {
         },
         after = [[<%= <div></lala|> %>]],
     },
+    {
+        name = "templ rename open tag",
+        filepath = "./sample/index.templ",
+        filetype = "templ",
+        linenr = 10,
+        key = [[ciwlala]],
+        before = [[<di|v> dsadsa </div> ]],
+        after = [[<lala|> dsadsa </lala> ]],
+    },
+    {
+        name = "templ rename open tag with attr",
+        filepath = "./sample/index.templ",
+        filetype = "templ",
+        linenr = 10,
+        key = [[ciwlala]],
+        before = [[<di|v class="lla"> dsadsa </div> ]],
+        after = [[<lala| class="lla"> dsadsa </lala|> ]],
+    },
+    {
+        name = "templ rename close tag with attr",
+        filepath = "./sample/index.templ",
+        filetype = "templ",
+        linenr = 10,
+        key = [[ciwlala]],
+        before = [[<div class="lla"> dsadsa </di|v> ]],
+        after = [[<lala class="lla"> dsadsa </lal|a> ]],
+    },
+    {
+        name = "templ not rename close tag on char <",
+        filepath = "./sample/index.templ",
+        filetype = "templ",
+        linenr = 10,
+        key = [[i<]],
+        before = [[<div class="lla"> dsadsa |/button> ]],
+        after = [[<div class="lla"> dsadsa <|/button> ]],
+    },
+    {
+
+        name = "templ not rename close tag with not valid",
+        filepath = "./sample/index.templ",
+        filetype = "templ",
+        linenr = 11,
+        key = [[ciwlala]],
+        before = {
+            [[<di|v class="lla" ]],
+            [[ dsadsa </div>]],
+        },
+        after = [[<lala class="lla" ]],
+    },
 }
 
 local autotag = require("nvim-ts-autotag")

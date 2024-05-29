@@ -1,0 +1,13 @@
+package main
+
+templ hello(name string) {
+	<div class="">Hello, { name }</div>
+}
+
+templ foo(name string) {
+	<div>
+		@hello(name)
+
+
+	</div>
+}

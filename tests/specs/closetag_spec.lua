@@ -201,6 +201,42 @@ local data = {
         before = [[<%= <div| %>]],
         after = [[<%= <div>| %> ]],
     },
+    {
+        name = "21 templ close tag",
+        filepath = "./sample/index.templ",
+        filetype = "templ",
+        linenr = 10,
+        key = [[>]],
+        before = [[<div| ]],
+        after = [[<div>|</div>]],
+    },
+    {
+        name = "22 templ close tag",
+        filepath = "./sample/index.templ",
+        filetype = "templ",
+        linenr = 10,
+        key = [[>]],
+        before = [[<div clas="laa"| ]],
+        after = [[<div clas="laa">|</div>]],
+    },
+    {
+        name = "23 templ not close tag on close tag",
+        filepath = "./sample/index.templ",
+        filetype = "templ",
+        linenr = 10,
+        key = [[>]],
+        before = [[<div>aa</div| ]],
+        after = [[<div>aa</div>|]],
+    },
+    {
+        name = "24 templ not close on input tag",
+        filepath = "./sample/index.templ",
+        filetype = "templ",
+        linenr = 10,
+        key = [[>]],
+        before = [[<input| ]],
+        after = [[<input>| ]],
+    },
 }
 
 local autotag = require("nvim-ts-autotag")
