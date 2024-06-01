@@ -141,7 +141,7 @@ local Setup = {
 }
 
 --- Do general plugin setup
----@param opts nvim-ts-autotag.PluginSetup
+---@param opts nvim-ts-autotag.PluginSetup|nil
 function Setup.setup(opts)
     opts = opts or {}
     if Setup.did_setup then
