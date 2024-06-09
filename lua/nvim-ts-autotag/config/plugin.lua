@@ -100,7 +100,7 @@ local function setup_tag_configs()
         skip_tag_pattern = { "quoted_attribute_value", "tag_end", "attribute", "value" },
     }))
 
-    TagConfigs:add(base_cfg:extend("rust",{
+    TagConfigs:add(html_tag_cfg:extend("rust",{
         start_tag_pattern = { 'open_tag' },
         start_name_tag_pattern = { 'node_identifier' },
         end_tag_pattern = { 'close_tag' },
