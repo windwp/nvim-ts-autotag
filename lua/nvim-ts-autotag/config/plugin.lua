@@ -101,15 +101,14 @@ local function setup_tag_configs()
     }))
 
     TagConfigs:add(base_cfg:extend("rust",{
-    filetypes = { 'rust' },
-    start_tag_pattern = { 'open_tag' },
-    start_name_tag_pattern = { 'node_identifier' },
-    end_tag_pattern = { 'close_tag' },
-    end_name_tag_pattern = { 'node_identifier' },
-    close_tag_pattern = { 'close_tag' },
-    close_name_tag_pattern = { 'close_tag', 'node_identifier' },
-    element_tag = { 'element_node' },
-    skip_tag_pattern = { 'close_tag', 'node_attribute', 'block' },
+        start_tag_pattern = { 'open_tag' },
+        start_name_tag_pattern = { 'node_identifier' },
+        end_tag_pattern = { 'close_tag' },
+        end_name_tag_pattern = { 'node_identifier' },
+        close_tag_pattern = { 'close_tag' },
+        close_name_tag_pattern = { 'close_tag', 'node_identifier' },
+        element_tag = { 'element_node' },
+        skip_tag_pattern = { 'close_tag', 'node_attribute', 'block' },
     }))
 end
 
