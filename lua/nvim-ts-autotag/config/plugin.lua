@@ -136,6 +136,7 @@ local Setup = {
         ["rescript"] = "typescriptreact",
         ["handlebars"] = "glimmer",
         ["hbs"] = "glimmer",
+        ["rust"] = "html",
     },
     per_filetype = {},
 }
