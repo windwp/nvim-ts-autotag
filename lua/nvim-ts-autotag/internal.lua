@@ -485,9 +485,12 @@ M.attach = function(bufnr)
             })
         end
         if Setup.get_opts(vim.bo.filetype).enable_rename then
+            -- HACK: This does not bind to a specific buffer, unfortunately it seems doing so will
+            -- break rename when switching between different buffers. Making it *not* bind to a
+            -- specific buffer shouldn't cause any problems in theory. Ideally it would be bound per
+            -- buffer, but for now this works (and I'm lazy).
             vim.api.nvim_create_autocmd("InsertLeave", {
                 group = group,
-                buffer = bufnr,
                 callback = M.rename_tag,
             })
         end
