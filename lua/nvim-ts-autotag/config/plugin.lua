@@ -99,6 +99,17 @@ local function setup_tag_configs()
         element_tag = { "element" },
         skip_tag_pattern = { "quoted_attribute_value", "tag_end", "attribute", "value" },
     }))
+
+    TagConfigs:add(base_cfg:extend("rust", {
+        start_tag_pattern = { "open_tag" },
+        start_name_tag_pattern = { "node_identifier" },
+        end_tag_pattern = { "close_tag" },
+        end_name_tag_pattern = { "node_identifier" },
+        close_tag_pattern = { "close_tag" },
+        close_name_tag_pattern = { "close_tag", "node_identifier" },
+        element_tag = { "element_node" },
+        skip_tag_pattern = { "close_tag", "node_attribute", "block" },
+    }))
 end
 
 ---@class nvim-ts-autotag.Opts
@@ -136,6 +147,7 @@ local Setup = {
         ["rescript"] = "typescriptreact",
         ["handlebars"] = "glimmer",
         ["hbs"] = "glimmer",
+        ["rust"] = "rust",
     },
     per_filetype = {},
 }
