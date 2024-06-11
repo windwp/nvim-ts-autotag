@@ -123,12 +123,10 @@ local Opts = {
 }
 
 ---@class nvim-ts-autotag.PluginSetup
----@field private did_setup boolean
 ---@field opts nvim-ts-autotag.Opts? General setup optionss
 ---@field aliases { [string]: string }? Aliases a filetype to an existing filetype tag config
 ---@field per_filetype { [string]: nvim-ts-autotag.Opts }? Per filetype config overrides
 local Setup = {
-    did_setup = false,
     opts = Opts,
     aliases = {
         ["astro"] = "html",
@@ -152,11 +150,18 @@ local Setup = {
     per_filetype = {},
 }
 
+local did_setup = false
+
+---@return boolean did_setup
+function Setup.did_setup()
+    return did_setup
+end
+
 --- Do general plugin setup
 ---@param opts nvim-ts-autotag.PluginSetup?
 function Setup.setup(opts)
     opts = opts or {}
-    if Setup.did_setup then
+    if Setup.did_setup() then
         return
     end
     ---@diagnostic disable-next-line: undefined-field
@@ -172,8 +177,8 @@ function Setup.setup(opts)
     end
     Setup = vim.tbl_deep_extend("force", Setup, opts or {})
 
-    if not Setup.did_setup then
-        Setup.did_setup = true
+    if not Setup.did_setup() then
+        did_setup = true
 
         setup_tag_configs()
         for new_ft, existing_ft in pairs(Setup.aliases) do
