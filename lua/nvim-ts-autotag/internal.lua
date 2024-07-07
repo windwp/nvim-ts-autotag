@@ -455,7 +455,7 @@ M.attach = function(bufnr)
 
     if TagConfigs:get(vim.bo.filetype) ~= nil then
         setup_ts_tag()
-        local group = vim.api.nvim_create_augroup("nvim-ts-autotag", { clear = true })
+        local group = vim.api.nvim_create_augroup("nvim-ts-autotag-" .. bufnr, { clear = true })
         if Setup.get_opts(vim.bo.filetype).enable_close then
             vim.keymap.set("i", ">", function()
                 local row, col = unpack(vim.api.nvim_win_get_cursor(0))
@@ -485,12 +485,9 @@ M.attach = function(bufnr)
             })
         end
         if Setup.get_opts(vim.bo.filetype).enable_rename then
-            -- HACK: This does not bind to a specific buffer, unfortunately it seems doing so will
-            -- break rename when switching between different buffers. Making it *not* bind to a
-            -- specific buffer shouldn't cause any problems in theory. Ideally it would be bound per
-            -- buffer, but for now this works (and I'm lazy).
             vim.api.nvim_create_autocmd("InsertLeave", {
                 group = group,
+                buffer = bufnr,
                 callback = M.rename_tag,
             })
         end
