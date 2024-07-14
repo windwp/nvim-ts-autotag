@@ -242,6 +242,42 @@ local function check_close_tag(close_slash_tag)
     return false
 end
 
+local function is_react_file()
+    local ft = vim.bo.ft
+    -- check filetypes first.
+    if ft == 'javascriptreact' or 'typescriptreact' then
+        return true
+    elseif ft ~= 'javascript' then
+        return false
+    end
+
+    local ok, buf_parser = pcall(vim.treesitter.get_parser)
+    if not ok then
+        return false
+    end
+
+    local tree = buf_parser:parse(true)
+    if not tree then
+        return false
+    end
+
+    local root = tree[1]:root()
+    -- parse the tree for jsx nodes
+    local query = vim.treesitter.query.parse('javascript', [[
+        (jsx_element)
+        (jsx_self_closing_element)
+    ]])
+
+    -- iterate over nodes to find jsx nodes
+    for _, node in query:iter_captures(root, 0, 0, -1) do
+        if node then
+            return true
+        end
+    end
+    return false
+end
+
+
 M.close_tag = function()
     local ok, buf_parser = pcall(vim.treesitter.get_parser)
     if not ok then
@@ -251,6 +287,9 @@ M.close_tag = function()
     local result, tag_name = check_close_tag()
     if result == true and tag_name ~= nil then
         vim.api.nvim_put({ string.format("</%s>", tag_name) }, "", true, false)
+        vim.cmd([[normal! F>]])
+    elseif is_react_file() then
+        vim.api.nvim_put({ "</>" }, "", true, false)
         vim.cmd([[normal! F>]])
     end
 end
