@@ -9,6 +9,9 @@ function M.init()
     if not nvim_ts then
         return
     end
+    if nvim_ts.define_modules == nil then
+        return
+    end
     nvim_ts.define_modules({
         autotag = {
             attach = function(bufnr, _)
