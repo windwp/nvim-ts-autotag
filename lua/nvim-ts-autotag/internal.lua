@@ -252,6 +252,9 @@ M.close_tag = function()
     if result == true and tag_name ~= nil then
         vim.api.nvim_put({ string.format("</%s>", tag_name) }, "", true, false)
         vim.cmd([[normal! F>]])
+    elseif utils.is_react_file() and utils.is_react_fragment() then
+        vim.api.nvim_put({ "</>" }, "", true, false)
+        vim.cmd([[normal! F>]])
     end
 end
 
