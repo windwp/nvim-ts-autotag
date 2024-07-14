@@ -11,8 +11,8 @@ function M.is_react_file()
     elseif ft ~= "javascript" then
         return false
     end
--- If we are in a `javascript` file, then check the content to see if the
--- current file counts as a react file
+    -- If we are in a `javascript` file, then check the content to see if the
+    -- current file counts as a react file
     local ok, buf_parser = pcall(vim.treesitter.get_parser)
     if not ok then
         return false
@@ -24,7 +24,7 @@ function M.is_react_file()
     end
 
     local root = tree[1]:root()
-    local queries = { 'jsx_element', 'jsx_self_closing_element' }
+    local queries = { "jsx_element", "jsx_self_closing_element" }
 
     for _, query in ipairs(queries) do
         if M.node_exists(root, query) then
@@ -34,8 +34,6 @@ function M.is_react_file()
 
     return false
 end
-
-
 
 ---@return boolean
 function M.is_react_fragment()
@@ -62,8 +60,6 @@ function M.node_exists(node, query)
 
     return false
 end
-
-
 
 M.get_node_text = function(node)
     local _, txt = pcall(get_node_text, node, vim.api.nvim_get_current_buf())

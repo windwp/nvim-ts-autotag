@@ -145,7 +145,7 @@ local data = {
         linenr = 12,
         key = [[>]],
         before = [[<|<div></div>]],
-        after = [[<>|</><div></div>]]
+        after = [[<>|</><div></div>]],
     },
     {
         name = "17 javascript autoclose fragment",
@@ -154,7 +154,7 @@ local data = {
         linenr = 12,
         key = [[>]],
         before = [[<|<div></div>]],
-        after = [[<>|</><div></div>]]
+        after = [[<>|</><div></div>]],
     },
     {
         name = "18 vue auto close tag",
