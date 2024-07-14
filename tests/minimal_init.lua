@@ -138,7 +138,5 @@ end
 
 M.setup({
     ["plenary.nvim"] = "https://github.com/nvim-lua/plenary.nvim",
-    ["popup.nvim"] = "https://github.com/nvim-lua/popup.nvim",
     ["nvim-treesitter"] = "https://github.com/nvim-treesitter/nvim-treesitter",
-    ["playground"] = "https://github.com/nvim-treesitter/playground",
 })
