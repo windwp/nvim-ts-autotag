@@ -11,7 +11,8 @@ function M.is_react_file()
     elseif ft ~= "javascript" then
         return false
     end
-
+-- If we are in a `javascript` file, then check the content to see if the
+-- current file counts as a react file
     local ok, buf_parser = pcall(vim.treesitter.get_parser)
     if not ok then
         return false
