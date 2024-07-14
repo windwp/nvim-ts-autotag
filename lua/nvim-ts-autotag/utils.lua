@@ -2,6 +2,68 @@ local log = require("nvim-ts-autotag._log")
 local get_node_text = vim.treesitter.get_node_text
 local M = {}
 
+---@return boolean
+function M.is_react_file()
+    local ft = vim.bo.ft
+    -- check filetypes first.
+    if ft == "javascriptreact" or ft == "typescriptreact" then
+        return true
+    elseif ft ~= "javascript" then
+        return false
+    end
+
+    local ok, buf_parser = pcall(vim.treesitter.get_parser)
+    if not ok then
+        return false
+    end
+
+    local tree = buf_parser:parse(true)
+    if not tree then
+        return false
+    end
+
+    local root = tree[1]:root()
+    local queries = { 'jsx_element', 'jsx_self_closing_element' }
+
+    for _, query in ipairs(queries) do
+        if M.node_exists(root, query) then
+            return true
+        end
+    end
+
+    return false
+end
+
+
+
+---@return boolean
+function M.is_react_fragment()
+    local line = vim.fn.getline(".")
+    local col = vim.fn.col(".") - 2
+    local strpart = vim.fn.strpart(line, col)
+    local char_at_cursor = vim.fn.strcharpart(strpart, 0, 1) ---@type string
+    return char_at_cursor == "<"
+end
+
+---@param node TSNode
+---@param query string
+---@return boolean
+function M.node_exists(node, query)
+    if node:type() == query then
+        return true
+    end
+
+    for child in node:iter_children() do
+        if M.node_exists(child, query) then
+            return true
+        end
+    end
+
+    return false
+end
+
+
+
 M.get_node_text = function(node)
     local _, txt = pcall(get_node_text, node, vim.api.nvim_get_current_buf())
     return vim.split(txt, "\n") or {}
