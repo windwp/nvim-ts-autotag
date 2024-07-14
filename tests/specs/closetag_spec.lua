@@ -144,11 +144,20 @@ local data = {
         filetype = "typescriptreact",
         linenr = 12,
         key = [[>]],
-        before = [[<]],
-        after = [[<>|</>]]
+        before = [[<|<div></div>]],
+        after = [[<>|</><div></div>]]
     },
     {
-        name = "17 vue auto close tag",
+        name = "17 javascript autoclose fragment",
+        filepath = "./sample/index.js",
+        filetype = "javascript",
+        linenr = 12,
+        key = [[>]],
+        before = [[<|<div></div>]],
+        after = [[<>|</><div></div>]]
+    },
+    {
+        name = "18 vue auto close tag",
         filepath = "./sample/index.vue",
         filetype = "vue",
         linenr = 4,
@@ -157,7 +166,7 @@ local data = {
         after = [[<Img>|</Img>]],
     },
     {
-        name = "18 vue not close on script",
+        name = "19 vue not close on script",
         filepath = "./sample/index.vue",
         filetype = "vue",
         linenr = 12,
@@ -166,7 +175,7 @@ local data = {
         after = [[const data:Array<string>| ]],
     },
     {
-        name = "19 php div ",
+        name = "20 php div ",
         filepath = "./sample/index.php",
         filetype = "php",
         linenr = 25,
@@ -184,7 +193,7 @@ local data = {
     --     after = [[<div>|</div> ]],
     -- },
     {
-        name = "20 lit template div",
+        name = "21 lit template div",
         filepath = "./sample/index.ts",
         filetype = "typescript",
         linenr = 3,
@@ -193,7 +202,7 @@ local data = {
         after = [[<div>|</div> ]],
     },
     {
-        name = "21 eruby template div",
+        name = "22 eruby template div",
         filepath = "./sample/index.html.erb",
         filetype = "eruby",
         linenr = 10,
@@ -202,7 +211,7 @@ local data = {
         after = [[<div>|</div> ]],
     },
     {
-        name = "22 eruby template ruby string",
+        name = "23 eruby template ruby string",
         filepath = "./sample/index.html.erb",
         filetype = "eruby",
         linenr = 10,
@@ -211,7 +220,7 @@ local data = {
         after = [[<%= <div>| %> ]],
     },
     {
-        name = "23 templ close tag",
+        name = "24 templ close tag",
         filepath = "./sample/index.templ",
         filetype = "templ",
         linenr = 10,
@@ -220,7 +229,7 @@ local data = {
         after = [[<div>|</div>]],
     },
     {
-        name = "24 templ close tag",
+        name = "25 templ close tag",
         filepath = "./sample/index.templ",
         filetype = "templ",
         linenr = 10,
@@ -229,7 +238,7 @@ local data = {
         after = [[<div clas="laa">|</div>]],
     },
     {
-        name = "25 templ not close tag on close tag",
+        name = "26 templ not close tag on close tag",
         filepath = "./sample/index.templ",
         filetype = "templ",
         linenr = 10,
@@ -238,7 +247,7 @@ local data = {
         after = [[<div>aa</div>|]],
     },
     {
-        name = "26 templ not close on input tag",
+        name = "27 templ not close on input tag",
         filepath = "./sample/index.templ",
         filetype = "templ",
         linenr = 10,
