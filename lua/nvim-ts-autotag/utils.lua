@@ -63,7 +63,20 @@ end
 
 M.get_node_text = function(node)
     local _, txt = pcall(get_node_text, node, vim.api.nvim_get_current_buf())
-    return vim.split(txt, "\n") or {}
+
+    local texts = vim.split(txt, "\n")
+    local filtered = {}
+
+    -- For some nodes (tsx) 'vim.treesitter.get_node_text' can return empty lines or lines with spaces
+    -- We have to exclude them
+    for i = 1, #texts do
+        local text = texts[i]:gsub("^%s*(.-)%s*$", "%1")
+        if text ~= "" then
+            filtered[#filtered + 1] = text
+        end
+    end
+
+    return filtered or {}
 end
 
 -- Stolen from nvim `0.10.0` for `0.9.5` users

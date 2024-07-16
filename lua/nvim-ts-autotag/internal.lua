@@ -287,20 +287,8 @@ local function validate_tag_regex(node, start_regex, end_regex)
     if node == nil then
         return false
     end
-
     local texts = utils.get_node_text(node)
-    local filtered = {}
-
-    -- For some nodes (tsx) 'vim.treesitter.get_node_text' can return empty lines or lines with spaces
-    -- We have to exclude them
-    for i = 1, #texts do
-        local text = texts[i]:gsub("^%s*(.-)%s*$", "%1")
-        if text ~= "" then
-            filtered[#filtered + 1] = text
-        end
-    end
-
-    if string.match(filtered[1], start_regex) and string.match(filtered[#filtered], end_regex) then
+    if string.match(texts[1], start_regex) and string.match(texts[#texts], end_regex) then
         return true
     end
     return false
