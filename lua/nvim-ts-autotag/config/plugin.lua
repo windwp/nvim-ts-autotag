@@ -132,6 +132,7 @@ local Setup = {
         ["astro"] = "html",
         ["eruby"] = "html",
         ["vue"] = "html",
+        ["htmlangular"] = "html",
         ["htmldjango"] = "html",
         ["markdown"] = "html",
         ["php"] = "html",
