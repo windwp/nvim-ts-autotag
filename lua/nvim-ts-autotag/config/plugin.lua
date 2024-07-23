@@ -134,6 +134,7 @@ local Setup = {
         ["vue"] = "html",
         ["htmldjango"] = "html",
         ["markdown"] = "html",
+        ["elixir"] = "html",
         ["php"] = "html",
         ["twig"] = "html",
         ["blade"] = "html",
