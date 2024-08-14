@@ -37,6 +37,13 @@ end
 
 ---@return boolean
 function M.is_react_fragment()
+    local node = vim.treesitter.get_node()
+
+    -- Bail out if the treesitter doesn't recognize `<>` as jsx_opening_element
+    if not node or node:type() ~= "jsx_opening_element" then
+        return false
+    end
+
     local line = vim.fn.getline(".")
     local col = vim.fn.col(".") - 2
     local strpart = vim.fn.strpart(line, col)
