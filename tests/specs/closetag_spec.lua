@@ -255,6 +255,15 @@ local data = {
         before = [[<input| ]],
         after = [[<input>| ]],
     },
+    {
+        name = "28 typescriptreact not close fragment in generic argument delimeters",
+        filepath = "./sample/index.tsx",
+        filetype = "typescriptreact",
+        linenr = 1,
+        key = [[>]],
+        before = [[type Foo = Bar<| ]],
+        after = [[type Foo = Bar<>]],
+    },
 }
 
 local autotag = require("nvim-ts-autotag")
