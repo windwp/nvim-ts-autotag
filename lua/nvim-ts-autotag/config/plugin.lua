@@ -187,6 +187,13 @@ function Setup.setup(opts)
             TagConfigs:add_alias(new_ft, existing_ft)
         end
         local augroup = vim.api.nvim_create_augroup("nvim_ts_xmltag", { clear = true })
+        vim.api.nvim_create_autocmd("InsertEnter", {
+            group = augroup,
+            once = true,
+            callback = function(args)
+                require("nvim-ts-autotag.internal").attach(args.buf)
+            end,
+        })
         vim.api.nvim_create_autocmd("Filetype", {
             group = augroup,
             callback = function(args)
