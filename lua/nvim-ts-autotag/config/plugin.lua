@@ -136,6 +136,7 @@ local Setup = {
         ["htmldjango"] = "html",
         ["markdown"] = "html",
         ["elixir"] = "html",
+        ["heex"] = "html",
         ["php"] = "html",
         ["twig"] = "html",
         ["blade"] = "html",
