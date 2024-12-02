@@ -46,6 +46,7 @@ local function is_in_template_tag()
     local current_node = cursor_node
     local visited_nodes = {}
     while not (has_element and has_template_string) and current_node do
+        local node_id = current_node:id()
         if visited_nodes[node_id] then
             break
         end
