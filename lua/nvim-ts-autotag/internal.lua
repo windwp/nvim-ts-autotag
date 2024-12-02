@@ -44,7 +44,13 @@ local function is_in_template_tag()
     local has_template_string = false
 
     local current_node = cursor_node
+    local visited_nodes = {}
     while not (has_element and has_template_string) and current_node do
+        local node_id = current_node:id()
+        if visited_nodes[node_id] then
+            break
+        end
+        visited_nodes[node_id] = true
         if not has_element and current_node:type() == "element" then
             has_element = true
         end
