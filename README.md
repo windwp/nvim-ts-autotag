@@ -10,6 +10,7 @@ It works with:
 - html
 - javascript
 - jsx
+- liquid
 - markdown
 - php
 - rescript
