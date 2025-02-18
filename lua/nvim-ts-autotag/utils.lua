@@ -94,7 +94,12 @@ end
 ---@param value any Value to compare
 ---@return boolean `true` if `t` contains `value`
 M.list_contains = function(t, value)
-    vim.validate({ t = { t, "t" } })
+    if vim.fn.has("nvim-0.11") == 1 then
+        vim.validate("t", t, "table")
+    else
+        vim.validate({ t = { t, "table" } })
+    end
+
     --- @cast t table<any,any>
 
     for _, v in ipairs(t) do
