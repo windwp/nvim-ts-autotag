@@ -140,6 +140,7 @@ local Setup = {
     opts = Opts,
     aliases = {
         ["astro"] = "html",
+        ["dot"] = "html",
         ["eruby"] = "html",
         ["liquid"] = "html",
         ["vue"] = "html",
