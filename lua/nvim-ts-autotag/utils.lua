@@ -14,7 +14,7 @@ function M.is_react_file()
     -- If we are in a `javascript` file, then check the content to see if the
     -- current file counts as a react file
     local ok, buf_parser = pcall(vim.treesitter.get_parser)
-    if not ok then
+    if not ok or not buf_parser then
         return false
     end
 
@@ -68,10 +68,13 @@ function M.node_exists(node, query)
     return false
 end
 
+---@param node TSNode
+---@return string[]
 M.get_node_text = function(node)
     local _, txt = pcall(get_node_text, node, vim.api.nvim_get_current_buf())
 
     local texts = vim.split(txt, "\n")
+    ---@type string[]
     local filtered = {}
 
     -- For some nodes (tsx) 'vim.treesitter.get_node_text' can return empty lines or lines with spaces
@@ -110,6 +113,9 @@ M.list_contains = function(t, value)
     return false
 end
 
+---@param node TSNode
+---@param node_tag string
+---@return boolean
 M.verify_node = function(node, node_tag)
     local txt = get_node_text(node, vim.api.nvim_get_current_buf())
     if txt:match(string.format("^<%s>", node_tag)) and txt:match(string.format("</%s>$", node_tag)) then
@@ -117,6 +123,9 @@ M.verify_node = function(node, node_tag)
     end
     return false
 end
+
+---@param bufnr integer?
+---@return integer, integer
 M.get_cursor = function(bufnr)
     local row, col = unpack(vim.api.nvim_win_get_cursor(bufnr or 0))
     return row - 1, col
@@ -127,6 +136,7 @@ end
 ---@param row integer 0-indexed row position
 ---@param col integer 0-indexec column position
 ---@param root_lang_tree vim.treesitter.LanguageTree
+---@return TSNode?, TSTree?, vim.treesitter.LanguageTree
 M.get_root_for_position = function(row, col, root_lang_tree)
     local lang_tree = root_lang_tree:language_for_range({ row, col, row, col })
 
@@ -150,7 +160,7 @@ M.get_node_at_cursor = function(winnr)
     row = row - 1
     local buf = vim.api.nvim_win_get_buf(winnr)
     local ok, root_lang_tree = pcall(vim.treesitter.get_parser, buf)
-    if not ok then
+    if not ok or not root_lang_tree then
         return
     end
 
@@ -162,13 +172,16 @@ M.get_node_at_cursor = function(winnr)
     return root:named_descendant_for_range(row, col, row, col)
 end
 
+---@param node TSNode
 M.dump_node = function(node)
     local text = M.get_node_text(node)
-    for _, txt in pairs(text) do
+    for _, txt in ipairs(text) do
         log.debug(txt)
     end
 end
 
+---@param node TSNode
+---@return string
 M.is_close_empty_node = function(node)
     local tag_name = ""
     if node ~= nil then
@@ -178,6 +191,7 @@ M.is_close_empty_node = function(node)
     return tag_name:match("%<%/%>$")
 end
 
+---@param target TSNode
 M.dump_node_text = function(target)
     log.debug("=============================")
     for node in target:iter_children() do

@@ -27,6 +27,8 @@ M.insert_char = function(text)
     vim.api.nvim_put({ text }, "c", true, true)
 end
 
+---@param text string
+---@param num integer
 M.feed = function(text, num)
     local result = ""
     for _ = 1, num, 1 do
@@ -35,9 +37,11 @@ M.feed = function(text, num)
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(result, true, false, true), "x", true)
 end
 
+---@param data nvim-ts-autotag.TestData[]
+---@return nvim-ts-autotag.TestData[]
 M.Test_filter = function(data)
     local run_data = {}
-    for _, value in pairs(data) do
+    for _, value in ipairs(data) do
         if value.only == true then
             table.insert(run_data, value)
             break
@@ -65,6 +69,7 @@ local compare_text = function(linenr, text_after, name, cursor_add, end_cursor)
                 assert.are.same(col + 1, end_cursor, "\n\n end cursor column error : " .. name .. "\n")
             else
                 assert.are.same(row, linenr + i - 2, "\n\n cursor row error: " .. name .. "\n")
+                ---@type integer
                 p_after = p_after + cursor_add
                 assert.are.same(col, math.max(p_after - 2, 0), "\n\n cursor column error : " .. name .. "\n")
             end
@@ -72,9 +77,15 @@ local compare_text = function(linenr, text_after, name, cursor_add, end_cursor)
     end
     return true
 end
+---@diagnostic disable-next-line: deprecated
 local islist = vim.islist or vim.tbl_islist
+
+---@param test_data nvim-ts-autotag.TestData[]
+---@param cb nvim-ts-autotag.TestOpts
+---wrong upstream islist types
+---@diagnostic disable: assign-type-mismatch
 M.Test_withfile = function(test_data, cb)
-    for _, value in pairs(test_data) do
+    for _, value in ipairs(test_data) do
         it("test " .. value.name, function()
             local text_before = {}
             value.linenr = value.linenr or 1
@@ -85,7 +96,9 @@ M.Test_withfile = function(test_data, cb)
             if not islist(value.before) then
                 value.before = { value.before }
             end
-            for index, text in pairs(value.before) do
+            for index, text in
+                ipairs(value.before --[[@as string[] ]])
+            do
                 local txt = string.gsub(text, "%|", "")
                 table.insert(text_before, txt)
                 if string.match(text, "%|") then
@@ -126,7 +139,9 @@ M.Test_withfile = function(test_data, cb)
                     helpers.feed(value.key, "x")
                 end
             else
-                for _, key in pairs(value.key) do
+                ---@type string[]
+                local keys = value.key
+                for _, key in ipairs(keys) do
                     helpers.feed(key, "x")
                     vim.wait(1)
                 end
@@ -144,11 +159,12 @@ end
 
 M.dump_node = function(node)
     local text = utils.get_node_text(node)
-    for _, txt in pairs(text) do
+    for _, txt in ipairs(text) do
         log.debug(txt)
     end
 end
 
+---@param target TSNode
 M.dump_node_text = function(target)
     for node in target:iter_children() do
         local node_type = node:type()

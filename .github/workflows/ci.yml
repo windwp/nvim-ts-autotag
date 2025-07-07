@@ -41,3 +41,30 @@ jobs:
           export PATH="${PWD}/_neovim/bin:${PATH}"
           export VIMRUNTIME="${PWD}/_neovim/share/nvim/runtime"
           make test
+
+
+      - name: Install linters
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # luals
+          cd
+          gh release download -R sumneko/lua-language-server -p '*-linux-x64.tar.gz' -D lua-language-server
+          tar xzf lua-language-server/* -C lua-language-server
+          echo "${PWD}/lua-language-server/bin" >> $GITHUB_PATH
+          export PATH="${PWD}/lua-language-server/bin:${PATH}"
+          lua-language-server --version
+
+          # luacheck
+          sudo apt-get update
+          sudo apt-get install -y luarocks
+          sudo luarocks install luacheck
+          luacheck --version
+
+          # stylua
+          gh release download -R JohnnyMorganz/StyLua -p '*-linux-x86_64.zip'
+          unzip -d /usr/local/bin stylua-linux-x86_64.zip
+          stylua --version
+
+      - name: Lint
+        run: make lint

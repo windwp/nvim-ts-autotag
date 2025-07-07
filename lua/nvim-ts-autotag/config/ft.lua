@@ -17,15 +17,8 @@ local utils = require("nvim-ts-autotag.utils")
 ---@field element_tag nvim-ts-autotag.FiletypeConfigPattern
 ---@field skip_tag_pattern nvim-ts-autotag.FiletypeConfigPattern
 
----@class nvim-ts-autotag.FiletypeConfig.patterns.p Partial patterns, lua_ls doesn't have partial support so this has to copied 🙁
----@field start_tag_pattern nvim-ts-autotag.FiletypeConfigPattern?
----@field start_name_tag_pattern nvim-ts-autotag.FiletypeConfigPattern?
----@field end_tag_pattern nvim-ts-autotag.FiletypeConfigPattern?
----@field end_name_tag_pattern nvim-ts-autotag.FiletypeConfigPattern?
----@field close_tag_pattern nvim-ts-autotag.FiletypeConfigPattern?
----@field close_name_tag_pattern nvim-ts-autotag.FiletypeConfigPattern?
----@field element_tag nvim-ts-autotag.FiletypeConfigPattern?
----@field skip_tag_pattern nvim-ts-autotag.FiletypeConfigPattern?
+---Partial patterns
+---@class nvim-ts-autotag.FiletypeConfig.patterns.p: nvim-ts-autotag.FiletypeConfig.patterns,{[string]: nvim-ts-autotag.FiletypeConfigPattern?}
 
 ---@class nvim-ts-autotag.FiletypeConfig
 ---@field filetype nvim-ts-autotag.FiletypeConfig.filetype If nil, then this is acting as a base

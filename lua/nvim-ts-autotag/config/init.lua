@@ -28,7 +28,7 @@ end
 --- Directly updates a given tag config stored in the TagConfigs
 ---@param tag_config nvim-ts-autotag.FiletypeConfig
 function TagConfigs:update(tag_config)
-    self._cfgs[tag_config] = tag_config
+    self._cfgs[tag_config.filetype] = tag_config
 end
 
 --- Get a list of supported filetypes

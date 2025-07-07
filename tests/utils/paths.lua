@@ -40,6 +40,7 @@ local Root = {
 
 ---@package
 ---@nodiscard
+---@param o table?
 ---@return nvim-ts-autotag.Root
 function Root:new(o)
     o = o or {}

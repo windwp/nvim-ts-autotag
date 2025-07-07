@@ -5,6 +5,7 @@ local M = {}
 ---@deprecated
 ---Will be removed in 1.0.0
 function M.init()
+    ---@type boolean, table
     local _, nvim_ts = pcall(require, "nvim-treesitter")
     if not nvim_ts then
         return

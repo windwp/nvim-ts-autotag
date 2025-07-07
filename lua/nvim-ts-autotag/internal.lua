@@ -5,6 +5,9 @@ local utils = require("nvim-ts-autotag.utils")
 
 local M = {}
 
+---@param tbl { [any]: any }
+---@param val any
+---@return boolean
 local function is_in_table(tbl, val)
     if tbl == nil then
         return false
@@ -21,6 +24,7 @@ M.is_supported = function(lang)
     return TagConfigs:get(lang) ~= nil
 end
 
+---@type { [integer]: nvim-ts-autotag.FiletypeConfig.patterns? }
 local buffer_tag = {}
 
 local setup_ts_tag = function()
@@ -43,8 +47,8 @@ local function is_in_template_tag()
     local has_element = false
     local has_template_string = false
 
-    local current_node = cursor_node
-    local visited_nodes = {}
+    local current_node = cursor_node ---@type TSNode?
+    local visited_nodes = {} ---@type { [string]: boolean? }
     while not (has_element and has_template_string) and current_node do
         local node_id = current_node:id()
         if visited_nodes[node_id] then
@@ -72,6 +76,8 @@ local function get_ts_tag()
     end
 end
 
+---@param opts { target: TSNode?, pattern: string[], skip_tag_pattern: string[] }
+---@return TSNode?
 local function find_child_match(opts)
     local target = opts.target
     local pattern = opts.pattern
@@ -89,6 +95,8 @@ local function find_child_match(opts)
     end
 end
 
+---@param opts { target: TSNode?, max_depth: integer?, pattern: string[], skip_tag_pattern: string[] }
+---@return TSNode?
 local function find_parent_match(opts)
     local target = opts.target
     local max_depth = opts.max_depth or 10
@@ -98,6 +106,7 @@ local function find_parent_match(opts)
         return nil
     end
     for _, ptn in pairs(pattern) do
+        ---@type TSNode?
         local cur_node = target
         local cur_depth = 0
         while cur_node ~= nil do
@@ -118,24 +127,29 @@ local function find_parent_match(opts)
     return nil
 end
 
+---@param node TSNode?
+---@return string?
 local function get_tag_name(node)
     local tag_name = nil
     if node ~= nil then
+        ---@type string?
         tag_name = utils.get_node_text(node)[1]
         if tag_name and #tag_name > 3 then
-            tag_name = tag_name:gsub("</", ""):gsub(">", ""):gsub("<", "")
+            tag_name = (tag_name:gsub("</", ""):gsub(">", ""):gsub("<", ""))
         end
     end
     return tag_name
 end
 
+---@param opt { target: TSNode?, tag_pattern: string[], name_tag_pattern: string[], skip_tag_pattern: string[], find_child: boolean? }
+---@return TSNode?
 local function find_tag_node(opt)
     local target = opt.target or utils.get_node_at_cursor()
     local tag_pattern = opt.tag_pattern
     local name_tag_pattern = opt.name_tag_pattern
     local skip_tag_pattern = opt.skip_tag_pattern
     local find_child = opt.find_child or false
-    local node
+    local node ---@type TSNode?
     if find_child then
         node = find_child_match({
             target = target,
@@ -250,7 +264,7 @@ end
 
 M.close_tag = function()
     local ok, buf_parser = pcall(vim.treesitter.get_parser)
-    if not ok then
+    if not ok or not buf_parser then
         return
     end
     buf_parser:parse(true)
@@ -266,7 +280,7 @@ end
 
 M.close_slash_tag = function()
     local ok, buf_parser = pcall(vim.treesitter.get_parser)
-    if not ok then
+    if not ok or not buf_parser then
         return
     end
     buf_parser:parse(true)
@@ -277,6 +291,8 @@ M.close_slash_tag = function()
     end
 end
 
+---@param node TSNode?
+---@param tag_name string
 local function replace_text_node(node, tag_name)
     if node == nil then
         return
@@ -289,6 +305,10 @@ local function replace_text_node(node, tag_name)
     end
 end
 
+---@param node TSNode?
+---@param start_regex string
+---@param end_regex string
+---@return boolean
 local function validate_tag_regex(node, start_regex, end_regex)
     if node == nil then
         return false
@@ -300,10 +320,14 @@ local function validate_tag_regex(node, start_regex, end_regex)
     return false
 end
 
+---@param node TSNode?
+---@return boolean
 local function validate_start_tag(node)
     return validate_tag_regex(node, "^%<%w", "%>$")
 end
 
+---@param node TSNode?
+---@return boolean
 local function validate_close_tag(node)
     return validate_tag_regex(node, "^%<%/%w", "%>$")
 end
@@ -355,12 +379,12 @@ local function rename_start_tag()
 
     if close_tag_node ~= nil then
         log.debug(close_tag_node:type())
-        local close_tag_name = get_tag_name(close_tag_node)
+        local close_tag_name = assert(get_tag_name(close_tag_node))
         -- verify parent node is same of close_tag_node (test case: 22)
         if close_tag_node ~= nil and tag_node ~= nil then
             local tag_parent = get_tag_name(tag_node:parent())
             -- log.debug(utils.dump_node(tag_node:parent()))
-            if tag_parent == close_tag_name and not utils.verify_node(tag_node:parent(), close_tag_name) then
+            if tag_parent == close_tag_name and not utils.verify_node(assert(tag_node:parent()), close_tag_name) then
                 log.debug("skip it have same")
                 return
             end
@@ -372,7 +396,7 @@ local function rename_start_tag()
             if close_tag_name == ">" then
                 tag_name = tag_name .. ">"
             end
-            replace_text_node(close_tag_node, tag_name)
+            replace_text_node(close_tag_node, assert(tag_name))
         end
     end
 end
@@ -416,7 +440,7 @@ local function rename_end_tag()
         local start_tag_name = get_tag_name(start_tag_node)
         if tag_name ~= start_tag_name then
             log.debug("replace end tag")
-            replace_text_node(start_tag_node, tag_name)
+            replace_text_node(start_tag_node, assert(tag_name))
         end
     end
 end
@@ -440,7 +464,7 @@ local is_before_arrow = is_before("<", 0)
 M.rename_tag = function()
     if is_before_word() then
         local ok, parser = pcall(vim.treesitter.get_parser)
-        if not ok then
+        if not ok or not parser then
             return
         end
         parser:parse(true)
@@ -456,11 +480,13 @@ M.attach = function(bufnr)
     end
     ---@diagnostic disable-next-line: invisible
     if not Setup.did_setup() then
+        ---@type boolean, table
         local _, ts_configs = pcall(require, "nvim-treesitter.configs")
         if not ts_configs then
             M.setup({ opts = {} })
         end
 
+        ---@type table
         local config = ts_configs.get_module("autotag")
         Setup.setup(config)
     end

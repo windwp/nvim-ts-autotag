@@ -1,5 +1,6 @@
 local helpers = require("tests.utils.helpers")
 
+---@type nvim-ts-autotag.TestData[]
 local data = {
     {
         name = "html rename open tag",

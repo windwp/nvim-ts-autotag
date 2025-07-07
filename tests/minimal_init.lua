@@ -8,6 +8,24 @@ local root = utils.paths.Root:push(".deps/")
 ---@alias PluginCloneInfo string | string[] The git url a plugin located at or a table of arguments to be passed to `git clone`
 ---@alias MinPlugins table<PluginName, PluginCloneInfo>
 
+---@class nvim-ts-autotag.TestData
+---@field name string
+---@field filepath string
+---@field filetype string
+---@field linenr integer
+---@field key string|string[]
+---@field before string|string[]
+---@field after string|string[]
+---@field only boolean?
+---@field not_replace_term_code boolean?
+---@field end_cursor integer?
+
+---@class nvim-ts-autotag.TestOpts
+---@field mode string?
+---@field cursor_add integer?
+---@field before_each function?
+---@field after_each function?
+
 ---Downloads a plugin from a given url and registers it on the 'runtimepath'
 ---@param plugin_name PluginName
 ---@param plugin_clone_args PluginCloneInfo
@@ -46,6 +64,7 @@ end
 
 function M.setup_treesitter()
     print("[TREESITTER] Setting up nvim-treesitter")
+    ---@type table
     local parser_cfgs = require("nvim-treesitter.parsers").get_parser_configs()
     for parser_name, parser_cfg in pairs({
         rescript = {
@@ -59,6 +78,7 @@ function M.setup_treesitter()
             },
         },
     }) do
+        ---@diagnostic disable-next-line: no-unknown
         parser_cfgs[parser_name] = parser_cfg
     end
     require("nvim-treesitter.configs").setup({
@@ -101,10 +121,11 @@ function M.setup(plugins)
     elseif clean == "false" or clean == "0" then
         print("[CLEANUP]: `TEST_CLEANUP` was disabled, not cleaning " .. xdg_root:get())
     end
-    for _, std_path in pairs(std_paths) do
+    for _, std_path in ipairs(std_paths) do
         local xdg_str = "XDG_" .. std_path:upper() .. "_HOME"
         local xdg_path = xdg_root:push(std_path):get()
         print(("[SETUP] Set vim.env.%s -> %s"):format(xdg_str, xdg_path))
+        ---@type string
         vim.env[xdg_str] = xdg_path
         ---@diagnostic disable-next-line: param-type-mismatch
         vim.fn.mkdir(xdg_path, "p")

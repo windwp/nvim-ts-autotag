@@ -171,7 +171,7 @@ function Setup.did_setup()
 end
 
 --- Do general plugin setup
----@param opts nvim-ts-autotag.PluginSetup?
+---@param opts nvim-ts-autotag.PluginSetup|{}
 function Setup.setup(opts)
     opts = opts or {}
     if Setup.did_setup() then
@@ -184,8 +184,7 @@ function Setup.setup(opts)
             vim.log.levels.WARN
         )
         opts = {
-            ---@diagnostic disable-next-line: assign-type-mismatch
-            opts = opts,
+            opts = opts --[[@as nvim-ts-autotag.Opts]],
         }
     end
     Setup = vim.tbl_deep_extend("force", Setup, opts or {})

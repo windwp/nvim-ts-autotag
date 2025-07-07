@@ -1,6 +1,32 @@
 {
-    "diagnostics.globals": [
-        "it",
-        "describe"
-    ]
+	"$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
+	"runtime": { "version": "LuaJIT" },
+	"workspace": {
+		"library": [
+			"$VIMRUNTIME",
+			"${3rd}/busted/library",
+			"${3rd}/luassert/library",
+			"./lua"
+		]
+	},
+	"diagnostics": {
+		"libraryFiles": "Disable",
+		"groupFileStatus": {
+			"strict": "Opened",
+			"strong": "Opened",
+			"ambiguity": "Opened",
+			"duplicate": "Opened",
+			"global": "Opened",
+			"luadoc": "Opened",
+			"redefined": "Opened",
+			"type-check": "Opened",
+			"unbalanced": "Opened",
+			"unused": "Opened"
+		},
+		"groupSeverity": {
+			"strong": "Warning",
+			"strict": "Warning"
+		},
+		"unusedLocalExclude": ["_*"]
+	}
 }
