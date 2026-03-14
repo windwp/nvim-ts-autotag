@@ -14,7 +14,7 @@ function M.is_react_file()
     -- If we are in a `javascript` file, then check the content to see if the
     -- current file counts as a react file
     local ok, buf_parser = pcall(vim.treesitter.get_parser)
-    if not ok then
+    if not ok or not buf_parser then
         return false
     end
 
@@ -150,7 +150,7 @@ M.get_node_at_cursor = function(winnr)
     row = row - 1
     local buf = vim.api.nvim_win_get_buf(winnr)
     local ok, root_lang_tree = pcall(vim.treesitter.get_parser, buf)
-    if not ok then
+    if not ok or not root_lang_tree then
         return
     end
 
