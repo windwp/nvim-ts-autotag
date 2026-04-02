@@ -251,7 +251,7 @@ end
 
 M.close_tag = function()
     local ok, buf_parser = pcall(vim.treesitter.get_parser)
-    if not ok then
+    if not ok or not buf_parser then
         return
     end
     buf_parser:parse(true)
@@ -267,7 +267,7 @@ end
 
 M.close_slash_tag = function()
     local ok, buf_parser = pcall(vim.treesitter.get_parser)
-    if not ok then
+    if not ok or not buf_parser then
         return
     end
     buf_parser:parse(true)
