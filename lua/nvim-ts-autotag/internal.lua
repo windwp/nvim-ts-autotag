@@ -251,7 +251,7 @@ end
 
 M.close_tag = function()
     local ok, buf_parser = pcall(vim.treesitter.get_parser)
-    if not ok then
+    if not ok or not buf_parser then
         return
     end
     buf_parser:parse(true)
@@ -267,7 +267,7 @@ end
 
 M.close_slash_tag = function()
     local ok, buf_parser = pcall(vim.treesitter.get_parser)
-    if not ok then
+    if not ok or not buf_parser then
         return
     end
     buf_parser:parse(true)
@@ -441,7 +441,7 @@ local is_before_arrow = is_before("<", 0)
 M.rename_tag = function()
     if is_before_word() then
         local ok, parser = pcall(vim.treesitter.get_parser)
-        if not ok then
+        if not ok or not parser then
             return
         end
         parser:parse(true)
