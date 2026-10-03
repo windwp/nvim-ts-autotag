@@ -53,6 +53,17 @@ local function setup_tag_configs()
         skip_tag_pattern = { "end_component" },
     }))
 
+    -- Support OCaml MLX files.
+    TagConfigs:add(html_tag_cfg:extend("ocaml.mlx", {
+        start_tag_pattern = { "jsx_element_opening" },
+        start_name_tag_pattern = { "jsx_tag", "value_name" },
+        end_tag_pattern = { "jsx_tag", "value_name" },
+        end_name_tag_pattern = { "component_name" },
+        close_tag_pattern = { "jsx_element_closing" },
+        close_name_tag_pattern = { "jsx_tag", "value_name" },
+        element_tag = { "jsx_expression" },
+    }))
+
     TagConfigs:add(base_cfg:extend("typescriptreact", {
         start_tag_pattern = { "jsx_opening_element", "start_tag" },
         start_name_tag_pattern = {
@@ -169,6 +180,7 @@ local Setup = {
         ["javascript.glimmer"] = "typescript.glimmer",
         ["hbs"] = "glimmer",
         ["rust"] = "rust",
+        ["ocaml.mlx"] = "ocaml.mlx",
     },
     per_filetype = {},
 }
