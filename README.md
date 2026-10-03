@@ -39,9 +39,6 @@ Before        Input         After
 
 Requires `Nvim 0.9.5` and up.
 
-Note that `nvim-ts-autotag` will not work unless you have treesitter parsers (like `html`) installed for a given
-filetype. See [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) for installing parsers.
-
 ```lua
 require('nvim-ts-autotag').setup({
   opts = {
@@ -59,6 +56,18 @@ require('nvim-ts-autotag').setup({
     }
   }
 })
+```
+
+Note that `nvim-ts-autotag` will not work unless you have treesitter parsers (like `html`) installed for a given
+filetype. See [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) for installing parsers.
+
+For some languages, such as `javascriptreact` and `typescriptreact`, the
+Tree-sitter grammar is named differently than the nvim filetype, so this plugin
+may not work. In such case, you can add the following to your `init.lua`.
+
+```lua
+vim.treesitter.language.register("javascript", "javascriptreact")
+vim.treesitter.language.register("tsx", "typescriptreact")
 ```
 
 > [!CAUTION]
